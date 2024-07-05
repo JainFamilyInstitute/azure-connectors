@@ -12,8 +12,14 @@
 annotated-types==0.7.0
     # via pydantic
 azure-core==1.30.2
+    # via azure-data-tables
     # via azure-identity
+    # via azure-storage-blob
+azure-data-tables==12.5.0
+    # via azure-connectors
 azure-identity==1.17.1
+    # via azure-connectors
+azure-storage-blob==12.20.0
     # via azure-connectors
 certifi==2024.7.4
     # via requests
@@ -25,6 +31,7 @@ charset-normalizer==3.3.2
     # via requests
 cryptography==42.0.8
     # via azure-identity
+    # via azure-storage-blob
     # via msal
     # via pyjwt
 distlib==0.3.8
@@ -37,8 +44,12 @@ identify==2.5.36
     # via pre-commit
 idna==3.7
     # via requests
+    # via yarl
 iniconfig==2.0.0
     # via pytest
+isodate==0.6.1
+    # via azure-data-tables
+    # via azure-storage-blob
 isort==5.13.2
 loguru==0.7.2
     # via azure-connectors
@@ -47,6 +58,8 @@ msal==1.29.0
     # via msal-extensions
 msal-extensions==1.2.0
     # via azure-identity
+multidict==6.0.5
+    # via yarl
 mypy==1.10.1
 mypy-extensions==1.0.0
     # via mypy
@@ -85,11 +98,14 @@ requests==2.32.3
 ruff==0.5.1
 six==1.16.0
     # via azure-core
+    # via isodate
 sqlalchemy==2.0.31
     # via azure-connectors
 typing-extensions==4.12.2
     # via azure-core
+    # via azure-data-tables
     # via azure-identity
+    # via azure-storage-blob
     # via mypy
     # via pydantic
     # via pydantic-core
@@ -98,3 +114,5 @@ urllib3==2.2.2
     # via requests
 virtualenv==20.26.3
     # via pre-commit
+yarl==1.9.4
+    # via azure-data-tables
