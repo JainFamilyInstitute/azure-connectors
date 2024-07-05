@@ -1,0 +1,35 @@
+[project]
+name = "azure-connectors"
+version = "0.1.0"
+description = "Python connectors for passwordless login to Azure storage services (SQL, ADLSv2, blob, tables), suitable for local and containerized projects."
+authors = [{ name = "Jerome Hodges", email = "jh4@jainfamilyinstitute.org"}]
+dependencies = [
+    "pyodbc>=5.1.0",
+    "sqlalchemy>=2.0.31",
+    "pydantic>=2.8.2",
+    "pydantic-settings>=2.3.4",
+    "azure-identity>=1.17.1",
+    "loguru>=0.7.2",
+]
+readme = "README.md"
+requires-python = ">= 3.10"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "mypy>=1.10.1",
+    "ruff>=0.5.1",
+    "isort>=5.13.2",
+    "pre-commit>=3.7.1",
+    "pytest>=8.2.2",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/azure_connectors"]
