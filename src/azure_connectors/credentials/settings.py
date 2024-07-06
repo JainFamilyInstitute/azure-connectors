@@ -1,0 +1,37 @@
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from azure_connectors.credentials.types import CredentialSource
+from .types import AnyHttpsUrl
+
+class AzureCredentialSettings(BaseSettings):
+    """
+    Represents the settings for retrieving Azure AD / Entra ID credentials.
+    Settings not passed in will be read from from the environment or the ".env" file,
+    assuming the prefix "AZURE_CREDENTIALS_".
+
+    Attributes:
+        source (CredentialSource): The source of the credentials, either "cli" or "default".
+        scope (AnyHttpsUrl): The scope of the credentials.
+    """
+
+    source: CredentialSource = Field(default=None)
+    scope: AnyHttpsUrl = Field(default=None)
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="AZURE_CREDENTIALS_",  # field env vars are prefixed with "AZURE_SQL_"
+        extra="ignore",  # don't throw error for unrelated items in .env
+        hide_input_in_errors=True,  # don't display any secrets in .env on ValidationError
+    )
+
+    @classmethod
+    def from_env(cls, **kwargs) -> 'AzureCredentialSettings':
+        """
+        Create an instance of AzureCredentialSettings by reading the settings from the environment variables and .env file.
+        Provided for consistency with dependent classes' from_env methods.
+
+        Returns:
+            AzureCredentialSettings: An instance of AzureCredentialSettings with the settings loaded from the environment.
+
+        """
+        return cls(**kwargs)

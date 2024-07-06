@@ -1,34 +1,35 @@
 import struct
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Literal, Union
+from typing import Optional
 
 from azure.identity import AzureCliCredential, DefaultAzureCredential
 from pydantic import SecretBytes
 
-BaseCredential = Union[DefaultAzureCredential, AzureCliCredential]
-CredentialType = Literal["cli", "default"]
-
+from azure_connectors.credentials.types import CredentialSource, BaseCredential, AnyHttpsUrl
+from azure_connectors.credentials.settings import AzureCredentialSettings
 
 @dataclass(frozen=True)
-class AzureSqlCredential:
+class AzureCredentials:
     """
     Retrieves and stores a credential for accessing Azure SQL databases.
 
     Attributes:
-        credential_type (CredentialType): The type of credential to use.
-        scope (str): The scope of the credential.
+        settings (AzureCredentialSettings): The settings for the Azure credentials.
         token (SecretBytes): Azure AD / Entra ID token for the credential.
-        _base_credential (BaseCredential): The underlying Azure credential.
 
     Raises:
         ValueError: If an invalid value is provided for credential type.
         RuntimeError: If failed to obtain an Azure AD / Entra ID token.
     """
 
-    credential_type: CredentialType
-    scope: str = "https://database.windows.net/.default"
+    settings: AzureCredentialSettings
     _base_credential: BaseCredential = field(init=False, repr=False)
+
+    @classmethod
+    def from_env(cls, **kwargs) -> "AzureCredentials":
+        return cls(settings=AzureCredentialSettings.from_env(**kwargs))
+       
 
     def __post_init__(self):
         object.__setattr__(self, "_base_credential", self._get_azure_credential())
@@ -41,12 +42,12 @@ class AzureSqlCredential:
             BaseCredential: The Azure credential object.
 
         Raises:
-            ValueError: If self.credential_type invalid.
+            ValueError: If self.settings.source isn't a valid value.
         """
-        match self.credential_type:
-            case "cli":
+        match self.settings.source:
+            case CredentialSource.CLI:
                 credential = AzureCliCredential()
-            case "default":
+            case CredentialSource.DEFAULT:
                 credential = DefaultAzureCredential()
             case _:
                 raise ValueError("Invalid value for credential_type.")
@@ -66,7 +67,7 @@ class AzureSqlCredential:
         """
         try:
             credential = self._base_credential
-            token_bytes = credential.get_token(self.scope).token.encode("UTF-16-LE")
+            token_bytes = credential.get_token(str(self.settings.scope)).token.encode("UTF-16-LE")
             token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
             return SecretBytes(token_struct)
 
