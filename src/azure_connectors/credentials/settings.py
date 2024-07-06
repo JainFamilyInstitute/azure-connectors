@@ -18,12 +18,7 @@ class AzureCredentialSettings(BaseSettings):
     source: CredentialSource = Field(default=None)
     scope: CredentialScope = Field(default=None)
 
-    model_config = SettingsConfigDict(
-        env_file=EnvConfig.ENV_FILE,
-        env_prefix=EnvConfig.CREDENTIALS_PREFIX,  # field env vars are prefixed with "AZURE_CREDENTIALS_"
-        extra="ignore",  # don't throw error for unrelated items in .env
-        hide_input_in_errors=True,  # don't display any secrets in .env on ValidationError
-    )
+    model_config = SettingsConfigDict(env_prefix=EnvConfig.CREDENTIALS_PREFIX, **EnvConfig.SETTINGS_BASE)
 
     @classmethod
     def from_env(cls, source: Optional[CredentialSource], scope: Optional[CredentialScope] = None) -> 'AzureCredentialSettings':
