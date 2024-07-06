@@ -6,11 +6,10 @@ from pydantic_core import Url
 from typing import Annotated
 
 BaseCredential = Union[DefaultAzureCredential, AzureCliCredential]
-AnyHttpsUrl = Annotated[Url, UrlConstraints(allowed_schemes=["https"])]
-
 
 class CredentialSource(Enum):
     CLI = "cli"
     DEFAULT = "default"
 
-
+class CredentialScope(Enum):
+    AZURE_SQL = "https://database.windows.net/.default"
