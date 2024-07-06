@@ -17,7 +17,6 @@ class AzureSqlSettings(BaseSettings):
         server (str): The server name.
         database (str): The database name.
         driver (str): The driver name.
-        SQL_COPT_SS_ACCESS_TOKEN (int): The access token for SQL Server.
 
     """
 
@@ -26,12 +25,7 @@ class AzureSqlSettings(BaseSettings):
     database: str = Field(default=None)
     driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER)
 
-    model_config = SettingsConfigDict(
-        env_file=EnvConfig.ENV_FILE,
-        env_prefix=EnvConfig.AZURE_SQL_PREFIX,  # field env vars are prefixed with "AZURE_SQL_"
-        extra="ignore",  # don't throw error for unrelated items in .env
-        hide_input_in_errors=True,  # don't display any secrets in .env on ValidationError
-    )
+    model_config = SettingsConfigDict(env_prefix=EnvConfig.AZURE_SQL_PREFIX, **EnvConfig.SETTINGS_BASE)
 
     @field_validator("server")
     @classmethod
