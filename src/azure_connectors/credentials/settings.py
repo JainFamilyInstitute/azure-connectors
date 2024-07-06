@@ -1,7 +1,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from azure_connectors.credentials.types import CredentialSource
-from .types import AnyHttpsUrl
+from azure_connectors.credentials.types import CredentialSource, CredentialScope
+from typing import Optional
 
 class AzureCredentialSettings(BaseSettings):
     """
@@ -11,11 +11,11 @@ class AzureCredentialSettings(BaseSettings):
 
     Attributes:
         source (CredentialSource): The source of the credentials, either "cli" or "default".
-        scope (AnyHttpsUrl): The scope of the credentials.
+        scope (CredentialScope): The scope of the credentials.
     """
 
     source: CredentialSource = Field(default=None)
-    scope: AnyHttpsUrl = Field(default=None)
+    scope: CredentialScope = Field(default=None)
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -25,13 +25,15 @@ class AzureCredentialSettings(BaseSettings):
     )
 
     @classmethod
-    def from_env(cls, **kwargs) -> 'AzureCredentialSettings':
+    def from_env(cls, source: Optional[CredentialSource], scope: Optional[CredentialScope] = None) -> 'AzureCredentialSettings':
         """
-        Create an instance of AzureCredentialSettings by reading the settings from the environment variables and .env file.
+        Create an instance of AzureCredentialSettings by reading the settings not passed explicitly
+          from the environment variables and .env file.
         Provided for consistency with dependent classes' from_env methods.
 
         Returns:
             AzureCredentialSettings: An instance of AzureCredentialSettings with the settings loaded from the environment.
 
         """
-        return cls(**kwargs)
+        pass_kwargs = {k: v for k,v in locals().items() if v is not None and k != 'cls'}
+        return cls(**pass_kwargs)

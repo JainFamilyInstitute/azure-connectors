@@ -5,7 +5,7 @@ import pyodbc
 import sqlalchemy
 
 from azure_connectors.credentials import AzureCredentials
-from azure_connectors.credentials.types import AnyHttpsUrl
+from azure_connectors.credentials.types import CredentialScope
 from .settings import AzureSqlSettings
 
 
@@ -22,8 +22,9 @@ class AzureSqlConnection:
 
     settings: AzureSqlSettings
     credentials: AzureCredentials
+    
+    CREDENTIAL_SCOPE: CredentialScope = CredentialScope.AZURE_SQL
     SQLALCHEMY_PREFIX = "mssql://"
-    CREDENTIAL_SCOPE = AnyHttpsUrl("https://database.windows.net/.default")
 
     @classmethod
     def from_env(cls) -> "AzureSqlConnection":

@@ -6,7 +6,7 @@ from typing import Optional
 from azure.identity import AzureCliCredential, DefaultAzureCredential
 from pydantic import SecretBytes
 
-from azure_connectors.credentials.types import CredentialSource, BaseCredential, AnyHttpsUrl
+from azure_connectors.credentials.types import CredentialSource, CredentialScope, BaseCredential
 from azure_connectors.credentials.settings import AzureCredentialSettings
 
 @dataclass(frozen=True)
@@ -27,8 +27,8 @@ class AzureCredentials:
     _base_credential: BaseCredential = field(init=False, repr=False)
 
     @classmethod
-    def from_env(cls, **kwargs) -> "AzureCredentials":
-        return cls(settings=AzureCredentialSettings.from_env(**kwargs))
+    def from_env(cls, source: Optional[CredentialSource] = None, scope: Optional[CredentialScope] = None) -> "AzureCredentials":
+        return cls(AzureCredentialSettings.from_env(source=source, scope=scope))
        
 
     def __post_init__(self):
@@ -67,7 +67,7 @@ class AzureCredentials:
         """
         try:
             credential = self._base_credential
-            token_bytes = credential.get_token(str(self.settings.scope)).token.encode("UTF-16-LE")
+            token_bytes = credential.get_token(str(self.settings.scope.value)).token.encode("UTF-16-LE")
             token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
             return SecretBytes(token_struct)
 
