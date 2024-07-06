@@ -6,7 +6,8 @@ from typing import Optional
 from azure.identity import AzureCliCredential, DefaultAzureCredential
 from pydantic import SecretBytes
 
-from azure_connectors.credentials.types import CredentialSource, CredentialScope, BaseCredential
+from azure_connectors.enums import CredentialSource, CredentialScope
+from azure_connectors.credentials.types import BaseCredential
 from azure_connectors.credentials.settings import AzureCredentialSettings
 
 @dataclass(frozen=True)
@@ -28,7 +29,19 @@ class AzureCredentials:
 
     @classmethod
     def from_env(cls, source: Optional[CredentialSource] = None, scope: Optional[CredentialScope] = None) -> "AzureCredentials":
-        return cls(AzureCredentialSettings.from_env(source=source, scope=scope))
+        """
+        Creates an instance of `AzureCredentials` by reading settings not explicitly passed from 
+        environment variables and the .env file.
+
+        Args:
+            source (Optional[CredentialSource]): The source of the credentials. If not provided, it will be read from the environment.
+            scope (Optional[CredentialScope]): The scope of the credentials. If not provided, it will be read from the environment.
+
+        Returns:
+            AzureCredentials: An instance of `AzureCredentials` initialized with the settings from environment variables.
+        """
+        settings = AzureCredentialSettings.from_env(source=source, scope=scope)
+        return cls(settings=settings)
        
 
     def __post_init__(self):
@@ -50,7 +63,7 @@ class AzureCredentials:
             case CredentialSource.DEFAULT:
                 credential = DefaultAzureCredential()
             case _:
-                raise ValueError("Invalid value for credential_type.")
+                raise ValueError("Invalid value for credential source.")
 
         return credential
 

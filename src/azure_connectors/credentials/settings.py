@@ -1,13 +1,14 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from azure_connectors.credentials.types import CredentialSource, CredentialScope
+from azure_connectors.enums import CredentialSource, CredentialScope
+from azure_connectors.env_config import EnvConfig
 from typing import Optional
 
 class AzureCredentialSettings(BaseSettings):
     """
     Represents the settings for retrieving Azure AD / Entra ID credentials.
     Settings not passed in will be read from from the environment or the ".env" file,
-    assuming the prefix "AZURE_CREDENTIALS_".
+    assuming the prefix "AZURE_CREDENTIALS_" (defined in azure_connectors.enums).
 
     Attributes:
         source (CredentialSource): The source of the credentials, either "cli" or "default".
@@ -18,8 +19,8 @@ class AzureCredentialSettings(BaseSettings):
     scope: CredentialScope = Field(default=None)
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_prefix="AZURE_CREDENTIALS_",  # field env vars are prefixed with "AZURE_SQL_"
+        env_file=EnvConfig.ENV_FILE,
+        env_prefix=EnvConfig.CREDENTIALS_PREFIX,  # field env vars are prefixed with "AZURE_CREDENTIALS_"
         extra="ignore",  # don't throw error for unrelated items in .env
         hide_input_in_errors=True,  # don't display any secrets in .env on ValidationError
     )
@@ -40,5 +41,6 @@ class AzureCredentialSettings(BaseSettings):
             AzureCredentialSettings: An instance of AzureCredentialSettings with the settings loaded from the environment.
 
         """
+        # pass along only the non-None arguments, so BaseSettings can handle the rest from the env
         pass_kwargs = {k: v for k,v in locals().items() if v is not None and k != 'cls'}
         return cls(**pass_kwargs)

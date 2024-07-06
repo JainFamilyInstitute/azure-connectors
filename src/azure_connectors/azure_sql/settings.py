@@ -4,12 +4,14 @@ from pydantic import Field, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
+from azure_connectors.env_config import EnvConfig
+from .constants import AZURE_SQL_DEFAULT_DRIVER
 
 class AzureSqlSettings(BaseSettings):
     """
     Represents the settings for connecting to Azure SQL.
     Settings not passed in will be read from from the environment or the ".env" file,
-    assuming the prefix "AZURE_SQL_".
+    assuming the prefix "AZURE_SQL_" (defined in azure_connectors.enums).
 
     Attributes:
         server (str): The server name.
@@ -19,16 +21,14 @@ class AzureSqlSettings(BaseSettings):
 
     """
 
-    server: str = Field(
-        default=None
-    )  # default=None prevents type complaints when using env settings.
-    database: str = Field(default="ODBC Driver 18 for SQL Server")
-    driver: str = Field(default=None)
-    SQL_COPT_SS_ACCESS_TOKEN: int = 1256
+    # default=None prevents type complaints when using env settings.
+    server: str = Field(default=None)
+    database: str = Field(default=None)
+    driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER)
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_prefix="AZURE_SQL_",  # field env vars are prefixed with "AZURE_SQL_"
+        env_file=EnvConfig.ENV_FILE,
+        env_prefix=EnvConfig.AZURE_SQL_PREFIX,  # field env vars are prefixed with "AZURE_SQL_"
         extra="ignore",  # don't throw error for unrelated items in .env
         hide_input_in_errors=True,  # don't display any secrets in .env on ValidationError
     )
@@ -85,9 +85,10 @@ class AzureSqlSettings(BaseSettings):
             driver (Optional[str]): The driver name for the Azure SQL connection. If not provided, it will be read from the environment.
 
         Returns:
-            AzureCredentialSettings: An instance of AzureCredentialSettings with the settings loaded from the environment.
+            AzureSqlSettings: An instance of AzureSqlSettings with the settings loaded from the environment.
 
         """
+        # pass along only the non-None arguments, so BaseSettings can handle the rest from the env
         pass_kwargs = {
             k: v for k, v in locals().items() if v is not None and k != "cls"
         }

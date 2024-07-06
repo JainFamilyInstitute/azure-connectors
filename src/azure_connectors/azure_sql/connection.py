@@ -5,8 +5,9 @@ import pyodbc
 import sqlalchemy
 
 from azure_connectors.credentials import AzureCredentials
-from azure_connectors.credentials.types import CredentialScope
+from azure_connectors.enums import CredentialScope
 from .settings import AzureSqlSettings
+from .constants import SQLALCHEMY_PREFIX, SQL_COPT_SS_ACCESS_TOKEN
 
 
 @dataclass(frozen=True)
@@ -16,15 +17,15 @@ class AzureSqlConnection:
 
     Attributes:
         settings (AzureSqlSettings): The settings for the Azure SQL connection.
-        credential (AzureSqlCredential): The credential for the Azure SQL connection.
+        credentials (AzureCredentials): The credentials for the Azure SQL connection.
         engine (sqlalchemy.engine.base.Engine): The SQLAlchemy engine for the Azure SQL connection.
     """
 
     settings: AzureSqlSettings
     credentials: AzureCredentials
-    
+
     CREDENTIAL_SCOPE: CredentialScope = CredentialScope.AZURE_SQL
-    SQLALCHEMY_PREFIX = "mssql://"
+  
 
     @classmethod
     def from_env(cls) -> "AzureSqlConnection":
@@ -46,7 +47,7 @@ class AzureSqlConnection:
         Returns:
             sqlalchemy.engine.base.Engine: The SQLAlchemy engine.
         """
-        engine = sqlalchemy.create_engine(self.SQLALCHEMY_PREFIX, creator=self._connect)
+        engine = sqlalchemy.create_engine(SQLALCHEMY_PREFIX, creator=self._connect)
         return engine
 
     def _connect(self) -> pyodbc.Connection:
@@ -57,4 +58,7 @@ class AzureSqlConnection:
             pyodbc.Connection: The pyodbc connection object.
         """
         token = self.credentials.token.get_secret_value()
-        return pyodbc.connect(self.settings.connection_string, attrs_before={self.settings.SQL_COPT_SS_ACCESS_TOKEN: token})
+        return pyodbc.connect(
+            self.settings.connection_string,
+            attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token},
+        )
