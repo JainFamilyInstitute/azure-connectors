@@ -14,7 +14,7 @@ def test_sql_info_authentication():
 
         # Check if the token is obtained correctly
         logger.info("Obtaining Azure AD token")
-        token = sql_info.credential.token
+        token = sql_info.credentials.token
         assert token is not None, "Failed to obtain Azure AD token"
         logger.info("Token obtained successfully")
 

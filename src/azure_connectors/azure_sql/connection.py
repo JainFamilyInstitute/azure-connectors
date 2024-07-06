@@ -4,8 +4,9 @@ from functools import cached_property
 import pyodbc
 import sqlalchemy
 
-from .credential import AzureSqlCredential
-from .settings import AzureSqlSettings, AzureSqlSettingsFromEnv
+from azure_connectors.credentials import AzureCredentials
+from azure_connectors.credentials.types import AnyHttpsUrl
+from .settings import AzureSqlSettings
 
 
 @dataclass(frozen=True)
@@ -20,8 +21,9 @@ class AzureSqlConnection:
     """
 
     settings: AzureSqlSettings
-    credential: AzureSqlCredential
+    credentials: AzureCredentials
     SQLALCHEMY_PREFIX = "mssql://"
+    CREDENTIAL_SCOPE = AnyHttpsUrl("https://database.windows.net/.default")
 
     @classmethod
     def from_env(cls) -> "AzureSqlConnection":
@@ -31,9 +33,9 @@ class AzureSqlConnection:
         Returns:
             AzureSqlConnection: An instance of AzureSqlConnection.
         """
-        settings = AzureSqlSettingsFromEnv()
-        credential = AzureSqlCredential(settings.credential_type)
-        return cls(settings=settings, credential=credential)
+        settings = AzureSqlSettings.from_env()
+        credentials = AzureCredentials.from_env(scope=cls.CREDENTIAL_SCOPE)
+        return cls(settings=settings, credentials=credentials)
 
     @cached_property
     def engine(self) -> sqlalchemy.engine.base.Engine:
@@ -53,5 +55,5 @@ class AzureSqlConnection:
         Returns:
             pyodbc.Connection: The pyodbc connection object.
         """
-        token = self.credential.token.get_secret_value()
+        token = self.credentials.token.get_secret_value()
         return pyodbc.connect(self.settings.connection_string, attrs_before={self.settings.SQL_COPT_SS_ACCESS_TOKEN: token})
