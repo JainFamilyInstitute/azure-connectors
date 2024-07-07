@@ -40,7 +40,7 @@ class AzureTableConnection:
             Example:
                 >>> client = AzureTableConnection.from_env()
             """
-            settings = AzureTableSettings.from_env()
+            settings = AzureTableSettings()
             credentials = AzureCredentials.from_env(scope=cls.CREDENTIAL_SCOPE)
             return cls(settings=settings, credentials=credentials)
 

@@ -1,15 +1,15 @@
 import re
-from typing import Optional
 
-from pydantic import Field, computed_field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field, computed_field, field_validator
 
-from azure_connectors.env_config import EnvConfig
+from azure_connectors.enums import EnvPrefix
+from azure_connectors.utils import with_env_settings
 
 from .constants import AZURE_SQL_DEFAULT_DRIVER
 
 
-class AzureSqlSettings(BaseSettings):
+@with_env_settings(env_prefix=EnvPrefix.AZURE_SQL)
+class AzureSqlSettings(BaseModel):
     """
     Represents the settings for connecting to Azure SQL.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -26,8 +26,6 @@ class AzureSqlSettings(BaseSettings):
     server: str = Field(default=None)
     database: str = Field(default=None)
     driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER)
-
-    model_config = SettingsConfigDict(env_prefix=EnvConfig.AZURE_SQL_PREFIX, **EnvConfig.SETTINGS_BASE)
 
     @field_validator("server")
     @classmethod
@@ -62,30 +60,3 @@ class AzureSqlSettings(BaseSettings):
         """
         return f"DRIVER={self.driver};SERVER={self.server};DATABASE={self.database};"
 
-    @classmethod
-    def from_env(
-        cls,
-        server: Optional[str] = None,
-        database: Optional[str] = None,
-        driver: Optional[str] = None,
-    ) -> "AzureSqlSettings":
-        """
-        Create an instance of AzureSqlSettings by reading the settings not passed explicitly
-        from the environment variables and .env file.
-
-        Provided for consistency with dependent classes' from_env methods.
-
-        Args:
-            server (Optional[str]): The server name for the Azure SQL connection. If not provided, it will be read from the environment.
-            database (Optional[str]): The database name for the Azure SQL connection. If not provided, it will be read from the environment.
-            driver (Optional[str]): The driver name for the Azure SQL connection. If not provided, it will be read from the environment.
-
-        Returns:
-            AzureSqlSettings: An instance of AzureSqlSettings with the settings loaded from the environment.
-
-        """
-        # pass along only the non-None arguments, so BaseSettings can handle the rest from the env
-        pass_kwargs = {
-            k: v for k, v in locals().items() if v is not None and k != "cls"
-        }
-        return cls(**pass_kwargs)

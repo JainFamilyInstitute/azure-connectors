@@ -8,7 +8,9 @@ from pydantic import SecretBytes
 
 from azure_connectors.credentials.settings import AzureCredentialSettings
 from azure_connectors.credentials.types import BaseCredential
-from azure_connectors.enums import CredentialScope, CredentialSource
+from azure_connectors.enums import CredentialScope
+
+from .enums import CredentialSource
 
 
 @dataclass(frozen=True)
@@ -41,7 +43,12 @@ class AzureCredentials:
         Returns:
             AzureCredentials: An instance of `AzureCredentials` initialized with the settings from environment variables.
         """
-        settings = AzureCredentialSettings.from_env(source=source, scope=scope)
+
+        # pass along only the non-None arguments, so Settings can handle the rest from the env
+        pass_args = {k: v for k, v in locals().items() if v is not None and k != "cls"}
+
+        settings = AzureCredentialSettings(**pass_args)
+
         return cls(settings=settings)
        
 
@@ -58,6 +65,9 @@ class AzureCredentials:
         Raises:
             ValueError: If self.settings.source isn't a valid value.
         """
+        
+        credential: BaseCredential
+
         match self.settings.source:
             case CredentialSource.CLI:
                 credential = AzureCliCredential()
