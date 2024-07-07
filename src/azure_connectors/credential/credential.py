@@ -6,15 +6,15 @@ from typing import Optional
 from azure.identity import AzureCliCredential, DefaultAzureCredential
 from pydantic import SecretBytes
 
-from azure_connectors.credentials.settings import AzureCredentialSettings
-from azure_connectors.credentials.types import BaseCredential
+from azure_connectors.credential.settings import AzureCredentialSettings
+from azure_connectors.credential.types import BaseCredential
 from azure_connectors.enums import CredentialScope
 
 from .enums import CredentialSource
 
 
 @dataclass(frozen=True)
-class AzureCredentials:
+class AzureCredential:
     """
     Retrieves and stores a credential for accessing Azure SQL databases.
 
@@ -31,7 +31,7 @@ class AzureCredentials:
     _base_credential: BaseCredential = field(init=False, repr=False)
 
     @classmethod
-    def from_env(cls, source: Optional[CredentialSource] = None, scope: Optional[CredentialScope] = None) -> "AzureCredentials":
+    def from_env(cls, source: Optional[CredentialSource] = None, scope: Optional[CredentialScope] = None) -> "AzureCredential":
         """
         Creates an instance of `AzureCredentials` by reading settings not explicitly passed from 
         environment variables and the .env file.
@@ -41,7 +41,7 @@ class AzureCredentials:
             scope (Optional[CredentialScope]): The scope of the credentials. If not provided, it will be read from the environment.
 
         Returns:
-            AzureCredentials: An instance of `AzureCredentials` initialized with the settings from environment variables.
+            AzureCredential: An instance of `AzureCredential` initialized with the settings from environment variables.
         """
 
         # pass along only the non-None arguments, so Settings can handle the rest from the env

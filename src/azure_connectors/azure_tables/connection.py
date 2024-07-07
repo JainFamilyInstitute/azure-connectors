@@ -3,7 +3,7 @@ from functools import cached_property
 
 import azure.data.tables
 
-from azure_connectors.credentials import AzureCredentials
+from azure_connectors.credential import AzureCredential
 from azure_connectors.enums import CredentialScope
 
 from .settings import AzureTableSettings
@@ -18,7 +18,7 @@ class AzureTableConnection:
 
     Attributes:
         settings (AzureTableSettings): The settings for the Azure SQL connection.
-        credentials (AzureCredentials): The credentials for the Azure SQL connection.
+        credential (AzureCredential): The credential for the Azure SQL connection.
         service_client (azure.data.tables.TableServiceClient): The TableServiceClient for the connection.
 
     Example:
@@ -29,7 +29,7 @@ class AzureTableConnection:
     """
 
     settings: AzureTableSettings
-    credentials: AzureCredentials
+    credential: AzureCredential
 
     CREDENTIAL_SCOPE: CredentialScope = CredentialScope.AZURE_TABLES
   
@@ -49,8 +49,8 @@ class AzureTableConnection:
                 >>> client = AzureTableConnection.from_env()
             """
             settings = AzureTableSettings()
-            credentials = AzureCredentials.from_env(scope=cls.CREDENTIAL_SCOPE)
-            return cls(settings=settings, credentials=credentials)
+            credential = AzureCredential.from_env(scope=cls.CREDENTIAL_SCOPE)
+            return cls(settings=settings, credential=credential)
 
     @cached_property
     def service_client(self) -> azure.data.tables.TableServiceClient:
@@ -62,7 +62,7 @@ class AzureTableConnection:
             """
             table_service_client = azure.data.tables.TableServiceClient(
                 endpoint=self.settings.server, 
-                credential=self.credentials._base_credential) 
+                credential=self.credential._base_credential) 
             return table_service_client
     
     def __enter__(self):

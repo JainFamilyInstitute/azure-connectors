@@ -6,12 +6,12 @@ from azure_connectors.utils import with_env_settings
 from .enums import CredentialSource
 
 
-@with_env_settings(env_prefix=EnvPrefix.CREDENTIALS)
+@with_env_settings(env_prefix=EnvPrefix.AZURE_CREDENTIAL)
 class AzureCredentialSettings(BaseModel):
     """
     Represents the settings for retrieving Azure AD / Entra ID credentials.
     Settings not passed in will be read from from the environment or the ".env" file,
-    assuming the prefix "AZURE_CREDENTIALS_" (defined in azure_connectors.enums).
+    assuming the prefix "AZURE_CREDENTIAL_" (defined in azure_connectors.enums).
 
     Attributes:
         source (CredentialSource): The source of the credentials, either "cli" or "default".
