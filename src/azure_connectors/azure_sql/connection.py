@@ -4,8 +4,8 @@ from functools import cached_property
 import pyodbc
 import sqlalchemy
 
+from azure_connectors.config.enums import CredentialScope
 from azure_connectors.credential import AzureCredential
-from azure_connectors.enums import CredentialScope
 
 from .constants import SQL_COPT_SS_ACCESS_TOKEN, SQLALCHEMY_PREFIX
 from .settings import AzureSqlSettings

@@ -4,8 +4,7 @@ from pydantic import BaseModel
 from pydantic.config import ExtraValues
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from azure_connectors.constants import ENV_FILE
-from azure_connectors.enums import EnvPrefix
+from azure_connectors.config import ENV_FILE, EnvPrefix
 
 T = TypeVar('T', bound=BaseModel)
 
