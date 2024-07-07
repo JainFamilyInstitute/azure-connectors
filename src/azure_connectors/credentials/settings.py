@@ -1,8 +1,11 @@
+from typing import Optional
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from azure_connectors.enums import CredentialSource, CredentialScope
+
+from azure_connectors.enums import CredentialScope, CredentialSource
 from azure_connectors.env_config import EnvConfig
-from typing import Optional
+
 
 class AzureCredentialSettings(BaseSettings):
     """

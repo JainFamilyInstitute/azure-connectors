@@ -6,8 +6,9 @@ import sqlalchemy
 
 from azure_connectors.credentials import AzureCredentials
 from azure_connectors.enums import CredentialScope
+
+from .constants import SQL_COPT_SS_ACCESS_TOKEN, SQLALCHEMY_PREFIX
 from .settings import AzureSqlSettings
-from .constants import SQLALCHEMY_PREFIX, SQL_COPT_SS_ACCESS_TOKEN
 
 
 @dataclass(frozen=True)
