@@ -36,3 +36,9 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/azure_connectors"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+per-file-ignores = {"tests/**/*.py" = ["E501"] } #ignore line length in tests
