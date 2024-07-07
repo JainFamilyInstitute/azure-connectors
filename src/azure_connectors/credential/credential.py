@@ -31,9 +31,13 @@ class AzureCredential:
     _base_credential: BaseCredential = field(init=False, repr=False)
 
     @classmethod
-    def from_env(cls, source: Optional[CredentialSource] = None, scope: Optional[CredentialScope] = None) -> "AzureCredential":
+    def from_env(
+        cls,
+        source: Optional[CredentialSource] = None,
+        scope: Optional[CredentialScope] = None,
+    ) -> "AzureCredential":
         """
-        Creates an instance of `AzureCredentials` by reading settings not explicitly passed from 
+        Creates an instance of `AzureCredentials` by reading settings not explicitly passed from
         environment variables and the .env file.
 
         Args:
@@ -50,7 +54,6 @@ class AzureCredential:
         settings = AzureCredentialSettings(**pass_args)
 
         return cls(settings=settings)
-       
 
     def __post_init__(self):
         object.__setattr__(self, "_base_credential", self._get_azure_credential())
@@ -65,7 +68,7 @@ class AzureCredential:
         Raises:
             ValueError: If self.settings.source isn't a valid value.
         """
-        
+
         credential: BaseCredential
 
         match self.settings.source:
@@ -91,8 +94,12 @@ class AzureCredential:
         """
         try:
             credential = self._base_credential
-            token_bytes = credential.get_token(str(self.settings.scope.value)).token.encode("UTF-16-LE")
-            token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
+            token_bytes = credential.get_token(
+                str(self.settings.scope.value)
+            ).token.encode("UTF-16-LE")
+            token_struct = struct.pack(
+                f"<I{len(token_bytes)}s", len(token_bytes), token_bytes
+            )
             return SecretBytes(token_struct)
 
         except Exception as e:

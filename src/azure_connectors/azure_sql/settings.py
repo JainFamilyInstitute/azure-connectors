@@ -59,4 +59,3 @@ class AzureSqlSettings(BaseModel):
             The connection string.
         """
         return f"DRIVER={self.driver};SERVER={self.server};DATABASE={self.database};"
-

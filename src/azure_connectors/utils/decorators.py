@@ -6,7 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from azure_connectors.config import ENV_FILE, EnvPrefix
 
-T = TypeVar('T', bound=BaseModel)
+T = TypeVar("T", bound=BaseModel)
+
 
 def with_env_settings(
     env_prefix: EnvPrefix,
@@ -16,7 +17,7 @@ def with_env_settings(
     **kwargs,
 ) -> Callable[[Type[T]], Type[T]]:
     """
-    Factory decorator that subclasses pydantic_settings.BaseSettings and adds model configuration settings 
+    Factory decorator that subclasses pydantic_settings.BaseSettings and adds model configuration settings
     to leverage pydantic_settings' environment variable handling.
 
     NB: This roundabout way of creating a class (rather than using a factory for model_config) is necessary
@@ -39,7 +40,6 @@ def with_env_settings(
     """
 
     def decorator(cls: Type[T]) -> Type[T]:
-
         if issubclass(cls, BaseSettings):
             raise ValueError(
                 f"Cannot decorate a class that is already a subclass of BaseSettings: {cls}"
@@ -50,7 +50,7 @@ def with_env_settings(
             env_prefix=env_prefix.value,
             extra=extra,
             hide_input_in_errors=hide_input_in_errors,
-            **kwargs, # type: ignore
+            **kwargs,  # type: ignore
         )
 
         new_cls = type(
