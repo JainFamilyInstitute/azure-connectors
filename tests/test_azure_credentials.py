@@ -1,2 +1,2 @@
-from azure_connectors.credential.settings import AzureCredentialSettings
 from azure_connectors.credential import AzureCredential
+from azure_connectors.credential.settings import AzureCredentialSettings

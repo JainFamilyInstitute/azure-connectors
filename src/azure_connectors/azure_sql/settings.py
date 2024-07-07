@@ -2,7 +2,7 @@ import re
 
 from pydantic import BaseModel, Field, computed_field, field_validator
 
-from azure_connectors.enums import EnvPrefix
+from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
 
 from .constants import AZURE_SQL_DEFAULT_DRIVER
@@ -13,7 +13,7 @@ class AzureSqlSettings(BaseModel):
     """
     Represents the settings for connecting to Azure SQL.
     Settings not passed in will be read from from the environment or the ".env" file,
-    assuming the prefix "AZURE_SQL_" (defined in azure_connectors.enums).
+    assuming the prefix "AZURE_SQL_" (defined in azure_connectors.config.enums).
 
     Attributes:
         server (str): The server name.

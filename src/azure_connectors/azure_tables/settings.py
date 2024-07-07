@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, computed_field
 
-from azure_connectors.enums import EnvPrefix
+from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
 
 
@@ -9,7 +9,7 @@ class AzureTableSettings(BaseModel):
     """
     Represents the settings for connecting to Azure Tables on Azure storage accounts.
     Settings not passed in will be read from from the environment or the ".env" file,
-    assuming the prefix "AZURE_TABLES_" (defined in azure_connectors.enums).
+    assuming the prefix "AZURE_TABLES_" (defined in azure_connectors.config.enums).
 
     Attributes:
         server (str): The server name.

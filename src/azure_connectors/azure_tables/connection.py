@@ -3,8 +3,8 @@ from functools import cached_property
 
 import azure.data.tables
 
+from azure_connectors.config.enums import CredentialScope
 from azure_connectors.credential import AzureCredential
-from azure_connectors.enums import CredentialScope
 
 from .settings import AzureTableSettings
 

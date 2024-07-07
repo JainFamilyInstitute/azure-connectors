@@ -6,9 +6,9 @@ from typing import Optional
 from azure.identity import AzureCliCredential, DefaultAzureCredential
 from pydantic import SecretBytes
 
+from azure_connectors.config.enums import CredentialScope
 from azure_connectors.credential.settings import AzureCredentialSettings
 from azure_connectors.credential.types import BaseCredential
-from azure_connectors.enums import CredentialScope
 
 from .enums import CredentialSource
 

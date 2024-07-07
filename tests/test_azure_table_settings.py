@@ -1,9 +1,12 @@
 import os
+
 import pytest
 from pydantic import ValidationError
-from azure_connectors.enums import EnvPrefix
+
+from azure_connectors.azure_tables.settings import \
+    AzureTableSettings  # replace 'my_module' with the actual module name
+from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
-from azure_connectors.azure_tables.settings import AzureTableSettings  # replace 'my_module' with the actual module name
 
 
 def test_azure_table_settings_env_vars(monkeypatch):
