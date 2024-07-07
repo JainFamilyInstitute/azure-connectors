@@ -88,6 +88,8 @@ pyjwt==2.8.0
 pyodbc==5.1.0
     # via azure-connectors
 pytest==8.2.2
+    # via pytest-mock
+pytest-mock==3.14.0
 python-dotenv==1.0.1
     # via pydantic-settings
 pyyaml==6.0.1
