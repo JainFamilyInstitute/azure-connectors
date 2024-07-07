@@ -3,10 +3,10 @@ from loguru import logger
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 
-from azure_connectors import AzureSqlConnection
 
+def test_sql_info_authentication(monkeypatch):
+    from azure_connectors import AzureSqlConnection
 
-def test_sql_info_authentication():
     try:
         # Attempt to create an instance of SQLInfo from environment variables
         logger.info("Creating SQLInfo instance from environment variables")
@@ -24,7 +24,11 @@ def test_sql_info_authentication():
         logger.info("Connecting to the database")
         with engine.connect() as connection:
             logger.info("Executing test query")
-            result = connection.execute(text("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"))
+            result = connection.execute(
+                text(
+                    "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"
+                )
+            )
             logger.debug(result)
             assert result, "Failed to execute test query"
         logger.info("Test query executed successfully")
@@ -35,4 +39,4 @@ def test_sql_info_authentication():
 
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main([__file__])
