@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field
 
 from azure_connectors.enums import CredentialScope, EnvPrefix

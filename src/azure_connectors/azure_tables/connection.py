@@ -12,12 +12,20 @@ from .settings import AzureTableSettings
 @dataclass(frozen=True)
 class AzureTableConnection:
     """
-    Represents an Azure Tables connectino.
+    Represents an Azure Tables connection.
+
+    Can be used as a context manager to ensure that the underlying service client is properly set up and closed.
 
     Attributes:
-        settings (AzureSqlSettings): The settings for the Azure SQL connection.
+        settings (AzureTableSettings): The settings for the Azure SQL connection.
         credentials (AzureCredentials): The credentials for the Azure SQL connection.
-        engine (sqlalchemy.engine.base.Engine): The SQLAlchemy engine for the Azure SQL connection.
+        service_client (azure.data.tables.TableServiceClient): The TableServiceClient for the connection.
+
+    Example:
+    >>> with AzureTableConnection.from_env() as ts:
+    >>>     for table in ts.list_tables():
+    >>>         print(f"Table: {table.name}")
+
     """
 
     settings: AzureTableSettings

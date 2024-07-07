@@ -4,13 +4,14 @@ from pydantic import BaseModel
 from pydantic.config import ExtraValues
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from azure_connectors.constants import ENV_FILE
 from azure_connectors.enums import EnvPrefix
 
 T = TypeVar('T', bound=BaseModel)
 
 def with_env_settings(
     env_prefix: EnvPrefix,
-    env_file: str = ".env",
+    env_file: str = ENV_FILE,
     extra: ExtraValues = "ignore",
     hide_input_in_errors: bool = True,
     **kwargs,
