@@ -1,1 +1,1 @@
-from .env_config import EnvConfig
+from .env_config import EnvConfig as EnvConfig

@@ -1,11 +1,13 @@
 import re
+from typing import Optional
 
 from pydantic import Field, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
 
 from azure_connectors.env_config import EnvConfig
+
 from .constants import AZURE_SQL_DEFAULT_DRIVER
+
 
 class AzureSqlSettings(BaseSettings):
     """

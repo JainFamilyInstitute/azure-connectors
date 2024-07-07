@@ -6,9 +6,10 @@ from typing import Optional
 from azure.identity import AzureCliCredential, DefaultAzureCredential
 from pydantic import SecretBytes
 
-from azure_connectors.enums import CredentialSource, CredentialScope
-from azure_connectors.credentials.types import BaseCredential
 from azure_connectors.credentials.settings import AzureCredentialSettings
+from azure_connectors.credentials.types import BaseCredential
+from azure_connectors.enums import CredentialScope, CredentialSource
+
 
 @dataclass(frozen=True)
 class AzureCredentials:
