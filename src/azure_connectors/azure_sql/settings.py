@@ -49,7 +49,7 @@ class AzureSqlSettings(BaseModel):
             raise ValueError("Database name contains invalid characters.")
         return v
 
-    @computed_field
+    @computed_field  # type: ignore
     @property
     def connection_string(self) -> str:
         """

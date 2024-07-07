@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field, computed_field
 
 from azure_connectors.enums import EnvPrefix
@@ -22,7 +21,7 @@ class AzureTableSettings(BaseModel):
     # default=None prevents type complaints when using env settings.
     storage_account: str = Field(default=None)
 
-    @computed_field
+    @computed_field  # type: ignore
     @property
     def server(self) -> str:
         """
@@ -32,5 +31,3 @@ class AzureTableSettings(BaseModel):
             The connection string.
         """
         return f"https://{self.storage_account}.table.core.windows.net"
-
-
