@@ -1,1 +1,1 @@
-from .credentials import AzureCredentials  # noqa: F401
+from .credentials import AzureCredentials as AzureCredentials
