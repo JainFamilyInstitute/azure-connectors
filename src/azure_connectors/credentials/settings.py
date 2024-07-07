@@ -1,13 +1,14 @@
-from typing import Optional
 
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field
 
-from azure_connectors.enums import CredentialScope, CredentialSource
-from azure_connectors.env_config import EnvConfig
+from azure_connectors.enums import CredentialScope, EnvPrefix
+from azure_connectors.utils import with_env_settings
+
+from .enums import CredentialSource
 
 
-class AzureCredentialSettings(BaseSettings):
+@with_env_settings(env_prefix=EnvPrefix.CREDENTIALS)
+class AzureCredentialSettings(BaseModel):
     """
     Represents the settings for retrieving Azure AD / Entra ID credentials.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -20,25 +21,3 @@ class AzureCredentialSettings(BaseSettings):
 
     source: CredentialSource = Field(default=None)
     scope: CredentialScope = Field(default=None)
-
-    model_config = SettingsConfigDict(env_prefix=EnvConfig.CREDENTIALS_PREFIX, **EnvConfig.SETTINGS_BASE)
-
-    @classmethod
-    def from_env(cls, source: Optional[CredentialSource], scope: Optional[CredentialScope] = None) -> 'AzureCredentialSettings':
-        """
-        Create an instance of AzureCredentialSettings by reading the settings not passed explicitly 
-        from the environment variables and .env file.
-        
-        Provided for consistency with dependent classes' from_env methods.
-
-        Args:
-            source (Optional[CredentialSource]): The source of the credentials. If not provided, it will be read from the environment.
-            scope (Optional[CredentialScope]): The scope of the credentials. If not provided, it will be read from the environment.
-
-        Returns:
-            AzureCredentialSettings: An instance of AzureCredentialSettings with the settings loaded from the environment.
-
-        """
-        # pass along only the non-None arguments, so BaseSettings can handle the rest from the env
-        pass_kwargs = {k: v for k,v in locals().items() if v is not None and k != 'cls'}
-        return cls(**pass_kwargs)

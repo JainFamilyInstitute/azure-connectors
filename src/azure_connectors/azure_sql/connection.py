@@ -36,7 +36,7 @@ class AzureSqlConnection:
         Returns:
             AzureSqlConnection: An instance of AzureSqlConnection.
         """
-        settings = AzureSqlSettings.from_env()
+        settings = AzureSqlSettings()
         credentials = AzureCredentials.from_env(scope=cls.CREDENTIAL_SCOPE)
         return cls(settings=settings, credentials=credentials)
 
