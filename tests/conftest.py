@@ -65,3 +65,10 @@ def setup_env(monkeypatch, tmp_path, request):
             monkeypatch.delenv(var, raising=False)
 
     reload_all_modules()
+
+
+@pytest.fixture
+def import_class(request):
+    module_name, class_name = request.param
+    module = importlib.import_module(module_name)
+    return getattr(module, class_name)
