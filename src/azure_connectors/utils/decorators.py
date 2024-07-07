@@ -17,9 +17,8 @@ def with_env_settings(
     **kwargs,
 ) -> Callable[[Type[T]], Type[T]]:
     """
-    Factory decorator that creates a new class with the same name as the original class,
-    and adds model configuration settings to it to leverage pydantic_settings'
-    environment variable handling.
+    Factory decorator that subclasses pydantic_settings.BaseSettings and adds model configuration settings 
+    to leverage pydantic_settings' environment variable handling.
 
     NB: This roundabout way of creating a class (rather than using a factory for model_config) is necessary
         because pydantic_settings requires the model_config to be set at time of class definition.
