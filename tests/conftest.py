@@ -4,36 +4,27 @@ import sys
 from pathlib import Path
 
 import pytest
+from utils import create_envfile_content, reload_all_modules, EnvDict, EnvSet
 
 ENV_FILE_ENV_VAR = "AZURE_CONNECTORS_ENV_FILE"
 
 
-def reload_all_modules():
-    # This function will reload all modules in the 'src' directory
-    src_path = Path(__file__).resolve().parent.parent / "src"
-    for module in list(sys.modules.values()):
-        try:
-            if (
-                module
-                and hasattr(module, "__file__")
-                and str(module.__file__).startswith(str(src_path))
-            ):
-                importlib.reload(module)
-        except Exception as e:
-            print(f"Error reloading module {module.__name__}: {e}")
-
-
 @pytest.fixture
 def setup_env(monkeypatch, tmp_path, request):
-    # Retrieve envfile_content and env_vars from request.param
-    envfile_content = request.param.get("envfile_content", None)
-    env_vars = request.param.get("env_vars", None)
+    # Retrieve envfile_vars and env_vars from request.param
+    env_vars: EnvDict = request.param.get("env_vars", dict())
+    envfile_vars: EnvDict = request.param.get("envfile_vars", dict())
+    excluded_vars: EnvSet = request.param.get("excluded_vars", set())
+
+    all_vars = env_vars.keys() | envfile_vars.keys() | excluded_vars
+
+    envfile_content = create_envfile_content(envfile_vars)
 
     # Delete any pre-existing environment variables
     monkeypatch.delenv(ENV_FILE_ENV_VAR, raising=False)
 
-    if env_vars:
-        for var in env_vars.keys():
+    if all_vars:
+        for var in all_vars:
             monkeypatch.delenv(var, raising=False)
 
     # Create a temporary .env file
@@ -60,8 +51,8 @@ def setup_env(monkeypatch, tmp_path, request):
     if envfile_content:
         monkeypatch.delenv(ENV_FILE_ENV_VAR, raising=False)
 
-    if env_vars:
-        for var in env_vars.keys():
+    if all_vars:
+        for var in all_vars:
             monkeypatch.delenv(var, raising=False)
 
     reload_all_modules()
