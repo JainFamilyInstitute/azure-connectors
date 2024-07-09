@@ -29,6 +29,7 @@ cfgv==3.4.0
     # via pre-commit
 charset-normalizer==3.3.2
     # via requests
+coverage==7.5.4
 cryptography==42.0.8
     # via azure-identity
     # via azure-storage-blob

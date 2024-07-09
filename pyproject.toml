@@ -29,6 +29,7 @@ dev-dependencies = [
     "pre-commit>=3.7.1",
     "pytest>=8.2.2",
     "pytest-mock>=3.14.0",
+    "coverage>=7.5.4",
 ]
 
 [tool.hatch.metadata]

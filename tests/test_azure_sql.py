@@ -2,9 +2,10 @@ import pytest
 from loguru import logger
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
+from pydantic import SecretBytes
 
 
-def test_sql_info_authentication(monkeypatch):
+def test_sql_connection_authentication(monkeypatch):
     from azure_connectors import AzureSqlConnection
 
     try:
@@ -17,7 +18,8 @@ def test_sql_info_authentication(monkeypatch):
         token = sql_info.credential.token
         assert token is not None, "Failed to obtain Azure AD token"
         logger.info("Token obtained successfully")
-
+        assert isinstance(token, SecretBytes)
+        
         # Attempt to create a SQLAlchemy engine and connect to the database
         logger.info("Creating SQLAlchemy engine")
         engine = sql_info.engine
