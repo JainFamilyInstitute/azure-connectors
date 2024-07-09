@@ -2,44 +2,49 @@
 # fmt: skip
 
 import os
+import re
 
 import pytest
 from pydantic import ValidationError
-
 from utils import generate_scenarios
 
 module_name = "azure_connectors.credential.settings"
 class_name = "AzureCredentialSettings"
 
+SCOPE_PREFIX = "AZURE_CREDENTIAL_"
 SCOPE_ENV_VAR = "AZURE_CREDENTIAL_SCOPE"
-SCOPE_ENV_VALUE = "https://storage.azure.com/.default"
 SOURCE_ENV_VAR = "AZURE_CREDENTIAL_SOURCE"
-SOURCE_ENV_VALUE = "cli"
-SCOPE_ENVFILE_VAR = SCOPE_ENV_VAR
-SCOPE_ENVFILE_VALUE ="https://database.windows.net/.default"
-SOURCE_ENVFILE_VAR = SOURCE_ENV_VAR
-SOURCE_ENVFILE_VALUE = "default"
-UNRELATED_VAR = "UNRELATED_VAR"
-UNRELATED_VALUE = "unrelated_value"
 
-BLANK = ""
-
-env_dict = {
-    SCOPE_ENV_VAR: SCOPE_ENV_VALUE,
-    SOURCE_ENV_VAR: SOURCE_ENV_VALUE,
+# specify the environment variables to try out
+env_vars = {
+    SCOPE_ENV_VAR: "https://storage.azure.com/.default",
+    SOURCE_ENV_VAR: "cli",
 }
 
-envfile_dict = {
-    SCOPE_ENVFILE_VAR: SCOPE_ENVFILE_VALUE,
-    SOURCE_ENVFILE_VAR: SOURCE_ENVFILE_VALUE,
+envfile_vars = {
+    SCOPE_ENV_VAR: "https://database.windows.net/.default",
+    SOURCE_ENV_VAR: "default",
 }
+
+passed_vars = {
+    SOURCE_ENV_VAR: "default",
+    SCOPE_ENV_VAR: "https://storage.azure.com/.default",
+}
+
+passed_param_names = {k: re.sub(f"{SCOPE_PREFIX}", "", k).lower() for k in passed_vars.keys()}
 
 unrelated_dict = {
-    UNRELATED_VAR: UNRELATED_VALUE,
+    "UNRELATED_VAR": "unrelated_value",
 }
-expected_value_scenarios = ((assignments_dict, expected_value, (module_name, class_name))
-                            for assignments_dict, expected_value in generate_scenarios(env_dict, envfile_dict, unrelated_dict))
-
+expected_value_scenarios = (
+    (assignments_dict, expected_value, (module_name, class_name))
+    for assignments_dict, expected_value in generate_scenarios(
+        env_vars=env_vars,
+        envfile_vars=envfile_vars,
+        unrelated_vars=unrelated_dict,
+        passed_vars=passed_vars,
+    )
+)
 
 
 @pytest.mark.parametrize(
@@ -49,10 +54,13 @@ expected_value_scenarios = ((assignments_dict, expected_value, (module_name, cla
 )
 def test_scenarios(setup_env, expected_value, import_class):
     # Ensure that the settings correctly pick up environment variables,
-    # read from .env file, and that set environment variables override anything in the .env file
+    # read from .env file, and handle passed variables
 
+    passed_vars = dict(setup_env) # yielded from fixture
     # Create settings instance
-    settings = import_class()
+    
+    kwargs = {passed_param_names[k]: v for k, v in passed_vars.items()}
+    settings = import_class(**kwargs)
 
     expected_scope = expected_value[SCOPE_ENV_VAR]
     expected_source = expected_value[SOURCE_ENV_VAR]
@@ -61,15 +69,55 @@ def test_scenarios(setup_env, expected_value, import_class):
     assert settings.scope.value == expected_scope
     assert settings.source.value == expected_source
 
+
 @pytest.mark.parametrize(
     "setup_env, import_class",
-    [({'env_vars': {}, 'envfile_vars': {}, 'excluded_vars':{SCOPE_ENV_VAR, SOURCE_ENV_VAR}, 'unrelated_vars': {}}, (module_name, class_name))],
+    [
+        (
+            {
+                "env_vars": {},
+                "envfile_vars": {},
+                "excluded_vars": {SCOPE_ENV_VAR, SOURCE_ENV_VAR},
+                "unrelated_vars": {},
+            },
+            (module_name, class_name),
+        )
+    ],
     indirect=["setup_env", "import_class"],
 )
 def test_missing_env_vars(setup_env, import_class):
     # Ensure that a ValidationError is raised when a required environment variable is missing
     with pytest.raises(ValidationError):
         import_class()
+
+
+@pytest.mark.parametrize(
+    "setup_env, import_class",
+    [
+        (
+            {
+                "env_vars": {SCOPE_ENV_VAR: "https://storage.azure.com/.default"},
+                "envfile_vars": {SCOPE_ENV_VAR: "https://database.windows.net/.default", SOURCE_ENV_VAR: "default"},
+                "excluded_vars": set(),
+                "unrelated_vars": {},
+            },
+            (module_name, class_name),
+        )
+    ],
+    indirect=["setup_env", "import_class"],
+)
+def test_env_vars_override(setup_env, import_class):
+    # Ensure that a ValidationError is raised when a required environment variable is missing
+
+    settings = import_class()
+
+    expected_scope = "https://storage.azure.com/.default"
+    expected_source = "default"
+
+    # Assert that the environment variable is read correctly and that the env_vars override the envfile_vars
+    assert settings.scope.value == expected_scope
+    assert settings.source.value == expected_source
+
 
 # @pytest.mark.parametrize(
 #     "setup_env, import_class",

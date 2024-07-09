@@ -1,7 +1,5 @@
-# noqa: E501
-# fmt: skip
-
 import os
+import re
 
 import pytest
 from pydantic import ValidationError
@@ -10,14 +8,22 @@ from utils import generate_scenarios
 module_name = "azure_connectors.azure_tables.settings"
 class_name = "AzureTableSettings"
 
-ENV_DICT = {"AZURE_TABLES_STORAGE_ACCOUNT": "testaccount"}
-ENVFILE_DICT = {"AZURE_TABLES_STORAGE_ACCOUNT": "testaccountfile"}
-UNRELATED_DICT = {"UNRELATED_VAR" : "unrelated_value"}
+SCOPE_PREFIX = "AZURE_TABLES_"
 
-expected_value_scenarios = ((assignments_dict, expected_value, (module_name, class_name))
-                            for assignments_dict, expected_value in generate_scenarios(ENV_DICT, ENVFILE_DICT, UNRELATED_DICT))
+env_vars = {"AZURE_TABLES_STORAGE_ACCOUNT": "testaccount"}
+envfile_vars = {"AZURE_TABLES_STORAGE_ACCOUNT": "testaccountfile"}
+unrelated_vars = {"UNRELATED_VAR": "unrelated_value"}
+passed_vars = {"AZURE_TABLES_STORAGE_ACCOUNT": "testaccountpassed"}
+passed_param_names = {
+    k: re.sub(f"{SCOPE_PREFIX}", "", k).lower() for k in passed_vars.keys()
+}
 
-
+expected_value_scenarios = (
+    (assignments_dict, expected_value, (module_name, class_name))
+    for assignments_dict, expected_value in generate_scenarios(
+        env_vars=env_vars, envfile_vars=envfile_vars, unrelated_vars=unrelated_vars
+    )
+)
 
 @pytest.mark.parametrize(
     "setup_env, expected_value, import_class",
@@ -26,10 +32,13 @@ expected_value_scenarios = ((assignments_dict, expected_value, (module_name, cla
 )
 def test_scenarios(setup_env, expected_value, import_class):
     # Ensure that the settings correctly pick up environment variables,
-    # read from .env file, and that set environment variables override anything in the .env file
+    # read from .env file, and handle passed variables
 
+    passed_vars = dict(setup_env) # yielded from fixture
     # Create settings instance
-    settings = import_class()
+    
+    kwargs = {passed_param_names[k]: v for k, v in passed_vars.items()}
+    settings = import_class(**kwargs)
 
     expected_storage_account = expected_value["AZURE_TABLES_STORAGE_ACCOUNT"]
 
@@ -37,9 +46,20 @@ def test_scenarios(setup_env, expected_value, import_class):
     assert settings.storage_account == expected_storage_account
     assert settings.server == f"https://{expected_storage_account}.table.core.windows.net"
 
+
 @pytest.mark.parametrize(
     "setup_env, import_class",
-    [({'env_vars': {}, 'envfile_vars': {}, 'excluded_vars':{"AZURE_TABLES_STORAGE_ACCOUNT"}, 'unrelated_vars': {}}, (module_name, class_name))],
+    [
+        (
+            {
+                "env_vars": {},
+                "envfile_vars": {},
+                "excluded_vars": {"AZURE_TABLES_STORAGE_ACCOUNT"},
+                "unrelated_vars": {},
+            },
+            (module_name, class_name),
+        )
+    ],
     indirect=["setup_env", "import_class"],
 )
 def test_missing_env_vars(setup_env, import_class):
@@ -47,9 +67,20 @@ def test_missing_env_vars(setup_env, import_class):
     with pytest.raises(ValidationError):
         import_class()
 
+
 @pytest.mark.parametrize(
     "setup_env, import_class",
-    [({'env_vars': {}, 'envfile_vars': {}, 'excluded_vars':{"AZURE_TABLES_STORAGE_ACCOUNT"}, 'unrelated_vars': {}}, (module_name, class_name))],
+    [
+        (
+            {
+                "env_vars": {},
+                "envfile_vars": {},
+                "excluded_vars": {"AZURE_TABLES_STORAGE_ACCOUNT"},
+                "unrelated_vars": {},
+            },
+            (module_name, class_name),
+        )
+    ],
     indirect=["setup_env", "import_class"],
 )
 def test_direct_instantiation(setup_env, import_class):
@@ -57,6 +88,7 @@ def test_direct_instantiation(setup_env, import_class):
     settings = import_class(storage_account="testaccount")
     assert settings.storage_account == "testaccount"
     assert settings.server == "https://testaccount.table.core.windows.net"
+
 
 if __name__ == "__main__":
     pytest.main(["-sv", os.path.abspath(__file__)])

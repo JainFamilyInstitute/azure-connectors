@@ -1,10 +1,8 @@
 # tests/conftest.py
 import importlib
-import sys
-from pathlib import Path
 
 import pytest
-from utils import create_envfile_content, reload_all_modules, EnvDict, EnvSet
+from utils import EnvDict, EnvSet, create_envfile_content, reload_all_modules
 
 ENV_FILE_ENV_VAR = "AZURE_CONNECTORS_ENV_FILE"
 
@@ -15,7 +13,7 @@ def setup_env(monkeypatch, tmp_path, request):
     env_vars: EnvDict = request.param.get("env_vars", dict())
     envfile_vars: EnvDict = request.param.get("envfile_vars", dict())
     excluded_vars: EnvSet = request.param.get("excluded_vars", set())
-
+    passed_vars: EnvDict = request.param.get("passed_vars", dict())
     all_vars = env_vars.keys() | envfile_vars.keys() | excluded_vars
 
     envfile_content = create_envfile_content(envfile_vars)
@@ -45,7 +43,7 @@ def setup_env(monkeypatch, tmp_path, request):
     # Reload all modules in the 'src' directory to ensure they pick up the new environment variables
     reload_all_modules()
 
-    yield
+    yield passed_vars
 
     # Clean up environment variables after the test
     if envfile_content:
@@ -56,7 +54,6 @@ def setup_env(monkeypatch, tmp_path, request):
             monkeypatch.delenv(var, raising=False)
 
     reload_all_modules()
-
 
 @pytest.fixture
 def import_class(request):
