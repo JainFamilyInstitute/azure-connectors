@@ -104,3 +104,7 @@ class AzureCredential:
 
         except Exception as e:
             raise RuntimeError("Failed to obtain Azure AD / Entra ID token") from e
+
+
+    def get_credential(self) -> BaseCredential:
+        return self._base_credential
