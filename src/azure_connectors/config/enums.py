@@ -4,6 +4,7 @@ from enum import Enum
 class EnvPrefix(Enum):
     AZURE_SQL = "AZURE_SQL_"
     AZURE_TABLES = "AZURE_TABLES_"
+    AZURE_BLOB = "AZURE_BLOB_"
     AZURE_CREDENTIAL = "AZURE_CREDENTIAL_"
 
 
