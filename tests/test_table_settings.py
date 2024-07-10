@@ -90,5 +90,26 @@ def test_direct_instantiation(setup_env, import_class):
     assert settings.server == "https://testaccount.table.core.windows.net"
 
 
+@pytest.mark.parametrize(
+    "setup_env, import_class",
+    [
+        (
+            {
+                "env_vars": {},
+                "envfile_vars": {},
+                "excluded_vars": {"AZURE_TABLES_STORAGE_ACCOUNT"},
+                "unrelated_vars": {},
+            },
+            (module_name, class_name),
+        )
+    ],
+    indirect=["setup_env", "import_class"],
+)
+def test_direct_bad_instantiation(setup_env, import_class):
+    # Ensure that a ValidationError is raised when a required parameter is missing
+    
+    with pytest.raises(ValidationError):
+        import_class(storage_account="Bad-Storage-Account-Name!")
+
 if __name__ == "__main__":
     pytest.main(["-sv", os.path.abspath(__file__)])

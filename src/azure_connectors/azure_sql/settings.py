@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, computed_field, field_validator
 
 from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
-
+from azure_connectors.validation import AzureSqlServerDomainName
 from .constants import AZURE_SQL_DEFAULT_DRIVER
 
 
@@ -23,16 +23,9 @@ class AzureSqlSettings(BaseModel):
     """
 
     # default=None prevents type complaints when using env settings.
-    server: str = Field(default=None)
+    server: AzureSqlServerDomainName = Field(default=None)
     database: str = Field(default=None)
     driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER)
-
-    @field_validator("server")
-    @classmethod
-    def server_must_be_valid_azure(cls, v: str) -> str:
-        if not v.lower().endswith(".database.windows.net"):
-            raise ValueError("Server must be a valid Azure SQL server.")
-        return v.lower()
 
     @field_validator("database")
     @classmethod

@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
-
+from azure_connectors.validation import StorageAccountName
 
 @with_env_settings(env_prefix=EnvPrefix.AZURE_TABLES)
 class AzureTableSettings(BaseModel):
@@ -19,8 +19,9 @@ class AzureTableSettings(BaseModel):
     """
 
     # default=None prevents type complaints when using env settings.
-    storage_account: str = Field(default=None)
+    storage_account: StorageAccountName = Field(default=None)
 
+    
     @computed_field  # type: ignore
     @property
     def server(self) -> str:
