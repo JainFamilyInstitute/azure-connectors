@@ -11,3 +11,4 @@ class EnvPrefix(Enum):
 class CredentialScope(Enum):
     AZURE_SQL = "https://database.windows.net/.default"
     AZURE_TABLES = "https://storage.azure.com/.default"
+    AZURE_BLOB = "https://storage.azure.com/.default"
