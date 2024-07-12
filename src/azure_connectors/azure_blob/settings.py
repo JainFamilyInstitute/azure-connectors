@@ -1,6 +1,4 @@
-import re
-
-from pydantic import BaseModel, Field, computed_field, field_validator
+from pydantic import BaseModel, Field, computed_field
 
 from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
@@ -8,16 +6,15 @@ from azure_connectors.validation import StorageAccountName
 
 
 @with_env_settings(env_prefix=EnvPrefix.AZURE_BLOB)
-class AzureBlobSettings(BaseModel):
+class AzureBlobServiceSettings(BaseModel):
     """
-    Represents the settings for connecting to Azure SQL.
+    Represents the settings for connecting to Azure Blob Storage.
     Settings not passed in will be read from from the environment or the ".env" file,
-    assuming the prefix "AZURE_SQL_" (defined in azure_connectors.config.enums).
+    assuming the prefix "AZURE_BLOB_" (defined in azure_connectors.config.enums).
 
     Attributes:
-        server (str): The server name.
-        database (str): The database name.
-        driver (str): The driver name.
+        storage_account (StorageAccountName): The storage account name.
+        account_url (str): The storage account URL.
 
     """
 
@@ -30,9 +27,12 @@ class AzureBlobSettings(BaseModel):
     @property
     def account_url(self) -> str:
         """
-        Generates the connection string based on the provided settings.
+        Generates the account URL from the storage account name.
 
         Returns:
             The connection string.
         """
         return f"https://{self.storage_account}.blob.core.windows.net"
+
+
+ 

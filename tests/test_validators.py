@@ -1,7 +1,7 @@
 import pytest
-from pydantic import ValidationError, TypeAdapter
-from azure_connectors.validation import StorageAccountName
+from pydantic import TypeAdapter, ValidationError
 
+from azure_connectors.validation import StorageAccountName
 
 
 def test_storage_account_name():

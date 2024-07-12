@@ -4,8 +4,6 @@ from typing import Any, Type
 from azure_connectors.config import CredentialScope
 from azure_connectors.credential import AzureCredential
 
-import inspect
-from typing import Type, Any
 
 def get_parameters(cls: Type[Any]) -> list[str]:
     """
