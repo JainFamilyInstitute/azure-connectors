@@ -1,8 +1,8 @@
 import pytest
 from loguru import logger
+from pydantic import SecretBytes
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
-from pydantic import SecretBytes
 
 
 def test_sql_connection_authentication(monkeypatch):

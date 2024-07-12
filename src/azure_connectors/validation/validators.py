@@ -1,5 +1,6 @@
 import re
 
+
 def validate_storage_account_name(v: str) -> str:
     if not re.match(r'^[a-z0-9]{3,24}$', v):
         raise ValueError('Storage account name must be between 3 and 24 characters long and can only contain lowercase letters and numbers.')

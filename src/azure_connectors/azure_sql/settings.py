@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, computed_field, field_validator
 from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
 from azure_connectors.validation import AzureSqlServerDomainName
+
 from .constants import AZURE_SQL_DEFAULT_DRIVER
 
 
