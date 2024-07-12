@@ -1,50 +1,67 @@
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+import inspect
+from typing import Any, Type
 
-# Assuming these are defined in your library
 from azure_connectors.config import CredentialScope
 from azure_connectors.credential import AzureCredential
 
-class AzureClientFactory:
-    def __init__(self, credential_provider):
-        self.credential_provider = credential_provider
+import inspect
+from typing import Type, Any
 
-    def create_client(self, client_class, *args, **kwargs):
-        credential = self.credential_provider.get_credential()
-        return client_class(*args, credential=credential, **kwargs)
+def get_parameters(cls: Type[Any]) -> list[str]:
+    """
+    Get the list of parameters for a given class.
 
-class AzureConnectors:
-    def __init__(self, credential: AzureCredential, client_factory: AzureClientFactory):
-        self.credential = credential
-        self.client_factory = client_factory
+    Args:
+        cls (Type[Any]): The class to inspect.
 
-    @classmethod
-    def from_env(cls): 
-        try:
-            credential = AzureCredential.from_env(scope=CredentialScope.AZURE_BLOB)
-            client_factory = AzureClientFactory(credential)
-            return cls(credential, client_factory)
-        except Exception as e:
-            raise EnvironmentError("Failed to initialize Azure credentials from environment") from e
+    Returns:
+        list[str]: A list of parameter names for the class.
 
-    def __getattr__(self, client_class_name):
-        client_class = globals().get(client_class_name)
-        if client_class is None:
-            raise AttributeError(f"{client_class_name} is not a valid Azure client class.")
+    """
+    return [x for x in inspect.signature(cls).parameters.keys() if not x.startswith('_')]
+
+
+def split_kwargs(cls: Type[Any], kwargs: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """
+    Splits a dicitonary of keyword arguments into two dictionaries: 
+    those used in initializing the specified class, and the remainder.
+
+    Args:
+        settings_class (Type[Any])): A class.
+        kwargs (dict[str, Any]): The keyword arguments to be split.
+
+    Returns:
+        tuple[dict[str, Any], dict[str, Any]]: A tuple containing two dictionaries. The first dictionary
+            contains the keyword arguments that match initializer for the specified class, and the second dictionary
+            contains the remaining keyword arguments.
+
+    """
+    
+    cls_parameters = get_parameters(cls)
+    cls_kwargs = {k: v for k, v in kwargs.items() if k in cls_parameters}
+    remaining_kwargs = {k: v for k, v in kwargs.items() if k not in cls_parameters}
+    return cls_kwargs, remaining_kwargs
+
+
+def create_azure_client_class(base_class: Type[Any], settings_class: Type[Any], scope: CredentialScope):
+    
+
+    class DynamicAzureClient(base_class):
         
-        def client_initializer(*args, **kwargs):
-            return self.client_factory.create_client(client_class, *args, **kwargs)
-        
-        return client_initializer
+        @classmethod
+        def from_env(cls, *args, **kwargs):
+            # find settable parameters for settings class
+            
+            settings_kwargs, base_kwargs = split_kwargs(settings_class, kwargs)
+            credential_provider = AzureCredential.from_env(scope=scope)
+            
+            # any kwargs passed that apply to settings go to settings
 
-# Example usage:
-if __name__ == "__main__":
-    azure_connectors = AzureConnectors.from_env()
-    BlobServiceClient = azure_connectors.BlobServiceClient
+            settings = settings_class(**settings_kwargs)
+            credential = credential_provider.get_credential()
 
-    # Initialize the BlobServiceClient
-    blob_service_client = BlobServiceClient(account_url="https://your_account.blob.core.windows.net")
+            
+            return base_class(account_url=settings.account_url, credential=credential, *args, **base_kwargs)
 
-    # Test the connection by listing containers (optional)
-    containers = blob_service_client.list_containers()
-    for container in containers:
-        print(container.name)
+    DynamicAzureClient.__name__ = base_class.__name__
+    return DynamicAzureClient
