@@ -1,1 +1,1 @@
-from .connection import AzureTableConnection as AzureTableConnection
+from .api_clients import TableServiceClient as TableServiceClient
