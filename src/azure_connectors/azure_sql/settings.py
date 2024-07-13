@@ -1,10 +1,8 @@
-import re
-
-from pydantic import BaseModel, Field, computed_field, field_validator
+from pydantic import BaseModel, Field, computed_field
 
 from azure_connectors.config import EnvPrefix
 from azure_connectors.utils import with_env_settings
-from azure_connectors.validation import AzureSqlServerDomainName
+from azure_connectors.validation import AzureSqlDatabaseName, AzureSqlServerDomainName
 
 from .constants import AZURE_SQL_DEFAULT_DRIVER
 
@@ -25,23 +23,8 @@ class AzureSqlSettings(BaseModel):
 
     # default=None prevents type complaints when using env settings.
     server: AzureSqlServerDomainName = Field(default=None)
-    database: str = Field(default=None)
+    database: AzureSqlDatabaseName = Field(default=None)
     driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER)
-
-    @field_validator("database")
-    @classmethod
-    def database_must_be_valid_mssql_name(cls, v: str) -> str:
-        if not v:
-            raise ValueError("Database name must not be empty.")
-        if len(v) > 128:
-            raise ValueError("Database name must be 128 characters or fewer.")
-        if not v[0].isalpha():
-            raise ValueError("Database name start with an alphabetic character.")
-        if " " in v:
-            raise ValueError("Database name must not contain spaces.")
-        if re.search(r'[\\/\:*?"<>|]', v):
-            raise ValueError("Database name contains invalid characters.")
-        return v
 
     @computed_field  # type: ignore
     @property
