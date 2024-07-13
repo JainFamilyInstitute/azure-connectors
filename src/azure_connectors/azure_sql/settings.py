@@ -54,5 +54,17 @@ class AzureSqlSettings(BaseModel):
         """
         return f"DRIVER={self.driver};SERVER={self.server};DATABASE={self.database};"
 
+
 class AzureSqlManagementClientSettings(AzureSqlSettings):
-    subscription_id: str = Field(default=None)
+    @computed_field  # type: ignore
+    @property
+    def client_settings(self) -> dict:
+        """
+        Generates the client settings for the storage account.
+
+        Returns:
+            The client settings.
+        """
+        return {
+            "base_url": self.server,
+        }

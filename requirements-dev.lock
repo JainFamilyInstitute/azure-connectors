@@ -12,6 +12,7 @@
 annotated-types==0.7.0
     # via pydantic
 azure-common==1.1.28
+    # via azure-mgmt-sql
     # via azure-mgmt-subscription
 azure-core==1.30.2
     # via azure-data-tables
@@ -24,7 +25,10 @@ azure-data-tables==12.5.0
 azure-identity==1.17.1
     # via azure-connectors
 azure-mgmt-core==1.4.0
+    # via azure-mgmt-sql
     # via azure-mgmt-subscription
+azure-mgmt-sql==3.0.1
+    # via azure-connectors
 azure-mgmt-subscription==3.1.1
     # via azure-connectors
 azure-storage-blob==12.20.0
@@ -70,6 +74,7 @@ msal==1.29.0
 msal-extensions==1.2.0
     # via azure-identity
 msrest==0.7.1
+    # via azure-mgmt-sql
     # via azure-mgmt-subscription
 multidict==6.0.5
     # via yarl

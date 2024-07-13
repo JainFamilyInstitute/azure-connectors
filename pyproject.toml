@@ -13,6 +13,7 @@ dependencies = [
     "azure-storage-blob>=12.20.0",
     "azure-data-tables>=12.5.0",
     "azure-mgmt-subscription>=3.1.1",
+    "azure-mgmt-sql>=3.0.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
