@@ -33,6 +33,7 @@ class AzureTableSettings(BaseModel):
         """
         return f"https://{self.storage_account}.table.core.windows.net"
 
+
 class AzureTableServiceSettings(AzureTableSettings):
     @computed_field  # type: ignore
     @property
