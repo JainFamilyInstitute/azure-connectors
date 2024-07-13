@@ -32,3 +32,17 @@ class AzureTableSettings(BaseModel):
             The connection string.
         """
         return f"https://{self.storage_account}.table.core.windows.net"
+
+class AzureTableServiceSettings(AzureTableSettings):
+    @computed_field  # type: ignore
+    @property
+    def client_settings(self) -> dict:
+        """
+        Generates the client settings for the storage account.
+
+        Returns:
+            The client settings.
+        """
+        return {
+            "endpoint": self.server,
+        }
