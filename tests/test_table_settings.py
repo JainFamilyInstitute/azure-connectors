@@ -25,6 +25,7 @@ expected_value_scenarios = (
     )
 )
 
+
 @pytest.mark.parametrize(
     "setup_env, expected_value, import_class",
     expected_value_scenarios,
@@ -34,9 +35,9 @@ def test_scenarios(setup_env, expected_value, import_class):
     # Ensure that the settings correctly pick up environment variables,
     # read from .env file, and handle passed variables
 
-    passed_vars = dict(setup_env) # yielded from fixture
+    passed_vars = dict(setup_env)  # yielded from fixture
     # Create settings instance
-    
+
     kwargs = {passed_param_names[k]: v for k, v in passed_vars.items()}
     settings = import_class(**kwargs)
 
@@ -44,7 +45,9 @@ def test_scenarios(setup_env, expected_value, import_class):
 
     # Assert that the environment variable is read correctly
     assert settings.storage_account == expected_storage_account
-    assert settings.server == f"https://{expected_storage_account}.table.core.windows.net"
+    assert (
+        settings.server == f"https://{expected_storage_account}.table.core.windows.net"
+    )
 
 
 @pytest.mark.parametrize(
@@ -107,9 +110,10 @@ def test_direct_instantiation(setup_env, import_class):
 )
 def test_direct_bad_instantiation(setup_env, import_class):
     # Ensure that a ValidationError is raised when a required parameter is missing
-    
+
     with pytest.raises(ValidationError):
         import_class(storage_account="Bad-Storage-Account-Name!")
+
 
 if __name__ == "__main__":
     pytest.main(["-sv", os.path.abspath(__file__)])

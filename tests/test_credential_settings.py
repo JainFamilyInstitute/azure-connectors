@@ -31,7 +31,9 @@ passed_vars = {
     SCOPE_ENV_VAR: "https://storage.azure.com/.default",
 }
 
-passed_param_names = {k: re.sub(f"{SCOPE_PREFIX}", "", k).lower() for k in passed_vars.keys()}
+passed_param_names = {
+    k: re.sub(f"{SCOPE_PREFIX}", "", k).lower() for k in passed_vars.keys()
+}
 
 unrelated_dict = {
     "UNRELATED_VAR": "unrelated_value",
@@ -56,9 +58,9 @@ def test_scenarios(setup_env, expected_value, import_class):
     # Ensure that the settings correctly pick up environment variables,
     # read from .env file, and handle passed variables
 
-    passed_vars = dict(setup_env) # yielded from fixture
+    passed_vars = dict(setup_env)  # yielded from fixture
     # Create settings instance
-    
+
     kwargs = {passed_param_names[k]: v for k, v in passed_vars.items()}
     settings = import_class(**kwargs)
 
@@ -97,7 +99,10 @@ def test_missing_env_vars(setup_env, import_class):
         (
             {
                 "env_vars": {SCOPE_ENV_VAR: "https://storage.azure.com/.default"},
-                "envfile_vars": {SCOPE_ENV_VAR: "https://database.windows.net/.default", SOURCE_ENV_VAR: "default"},
+                "envfile_vars": {
+                    SCOPE_ENV_VAR: "https://database.windows.net/.default",
+                    SOURCE_ENV_VAR: "default",
+                },
                 "excluded_vars": set(),
                 "unrelated_vars": {},
             },
