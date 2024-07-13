@@ -60,7 +60,7 @@ class AzureTableConnection:
             azure.data.tables.TableServiceClient: The TableServiceClient object for the storage account.
         """
         table_service_client = azure.data.tables.TableServiceClient(
-            endpoint=self.settings.server, credential=self.credential.get_credential()
+            endpoint=self.settings.server, credential=self.credential.base_credential
         )
         return table_service_client
 
