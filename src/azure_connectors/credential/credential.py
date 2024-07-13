@@ -29,7 +29,7 @@ class AzureCredential:
     """
 
     settings: AzureCredentialSettings
-    _base_credential: BaseCredential = field(init=False, repr=False)
+    base_credential: BaseCredential = field(init=False, repr=False)
 
     @classmethod
     def from_env(
@@ -57,7 +57,7 @@ class AzureCredential:
         return cls(settings=settings)
 
     def __post_init__(self):
-        object.__setattr__(self, "_base_credential", self._get_azure_credential())
+        object.__setattr__(self, "base_credential", self._get_azure_credential())
 
     def _get_azure_credential(self) -> BaseCredential:
         """
@@ -94,7 +94,7 @@ class AzureCredential:
             RuntimeError: If failed to obtain the token.
         """
         try:
-            credential = self._base_credential
+            credential = self.base_credential
             token_bytes = credential.get_token(
                 str(self.settings.scope.value)
             ).token.encode("UTF-16-LE")
@@ -106,17 +106,14 @@ class AzureCredential:
         except Exception as e:
             raise RuntimeError("Failed to obtain Azure AD / Entra ID token") from e
 
-
-    def get_credential(self) -> BaseCredential:
-        return self._base_credential
-    
-    def get_subscription_id(self) -> str:
+    @property
+    def subscription_id(self) -> str:
         """
         Retrieves the subscription ID for the Azure credentials.
 
         Returns:
             str: The subscription ID.
         """
-        client = SubscriptionClient(self._base_credential)
+        client = SubscriptionClient(self.base_credential)
         subscription = next(client.subscriptions.list())
         return subscription.subscription_id
