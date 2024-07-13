@@ -34,5 +34,17 @@ class AzureBlobServiceSettings(BaseModel):
         """
         return f"https://{self.storage_account}.blob.core.windows.net"
 
+    @computed_field  # type: ignore
+    @property
+    def client_settings(self) -> dict:
+        """
+        Generates the client settings for the storage account.
 
+        Returns:
+            The client settings.
+        """
+        return {
+            "account_url": self.account_url,
+        }
+    
  

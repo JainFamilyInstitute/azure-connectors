@@ -4,6 +4,7 @@ from functools import cached_property
 from typing import Optional
 
 from azure.identity import AzureCliCredential, DefaultAzureCredential
+from azure.mgmt.subscription import SubscriptionClient
 from pydantic import SecretBytes
 
 from azure_connectors.config.enums import CredentialScope
@@ -108,3 +109,14 @@ class AzureCredential:
 
     def get_credential(self) -> BaseCredential:
         return self._base_credential
+    
+    def get_subscription_id(self) -> str:
+        """
+        Retrieves the subscription ID for the Azure credentials.
+
+        Returns:
+            str: The subscription ID.
+        """
+        client = SubscriptionClient(self._base_credential)
+        subscription = next(client.subscriptions.list())
+        return subscription.subscription_id
