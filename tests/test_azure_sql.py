@@ -19,7 +19,7 @@ def test_sql_connection_authentication(monkeypatch):
         assert token is not None, "Failed to obtain Azure AD token"
         logger.info("Token obtained successfully")
         assert isinstance(token, SecretBytes)
-        
+
         # Attempt to create a SQLAlchemy engine and connect to the database
         logger.info("Creating SQLAlchemy engine")
         engine = sql_info.engine

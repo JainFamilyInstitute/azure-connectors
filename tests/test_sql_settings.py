@@ -33,10 +33,11 @@ passed_vars = {
     SERVER_ENV_VAR: "testserverpassed.database.windows.net",
     DATABASE_ENV_VAR: "testdbpassed",
     DRIVER_ENV_VAR: "ODBC Driver Passed",
-
 }
 
-passed_param_names = {k: re.sub(f"{SCOPE_PREFIX}", "", k).lower() for k in passed_vars.keys()}
+passed_param_names = {
+    k: re.sub(f"{SCOPE_PREFIX}", "", k).lower() for k in passed_vars.keys()
+}
 
 unrelated_dict = {
     "UNRELATED_VAR": "unrelated_value",
@@ -61,9 +62,9 @@ def test_scenarios(setup_env, expected_value, import_class):
     # Ensure that the settings correctly pick up environment variables,
     # read from .env file, and handle passed variables
 
-    passed_vars = dict(setup_env) # yielded from fixture
+    passed_vars = dict(setup_env)  # yielded from fixture
     # Create settings instance
-    
+
     kwargs = {passed_param_names[k]: v for k, v in passed_vars.items()}
     settings = import_class(**kwargs)
 
@@ -71,8 +72,10 @@ def test_scenarios(setup_env, expected_value, import_class):
     assert settings.server == expected_value[SERVER_ENV_VAR]
     assert settings.database == expected_value[DATABASE_ENV_VAR]
     assert settings.driver == expected_value[DRIVER_ENV_VAR]
-    assert settings.connection_string == f"DRIVER={expected_value[DRIVER_ENV_VAR]};SERVER={expected_value[SERVER_ENV_VAR]};DATABASE={expected_value[DATABASE_ENV_VAR]};"
-
+    assert (
+        settings.connection_string
+        == f"DRIVER={expected_value[DRIVER_ENV_VAR]};SERVER={expected_value[SERVER_ENV_VAR]};DATABASE={expected_value[DATABASE_ENV_VAR]};"
+    )
 
 
 @pytest.mark.parametrize(
@@ -101,8 +104,8 @@ def test_missing_env_vars(setup_env, import_class):
     [
         (
             {
-                "env_vars": env_vars, 
-                "envfile_vars": envfile_vars, 
+                "env_vars": env_vars,
+                "envfile_vars": envfile_vars,
                 "excluded_vars": set(),
                 "unrelated_vars": {},
             },
@@ -112,14 +115,12 @@ def test_missing_env_vars(setup_env, import_class):
     indirect=["setup_env", "import_class"],
 )
 def test_env_vars_override(setup_env, import_class):
-
     settings = import_class()
 
     # Check the settings members against the expected values
     assert settings.server == env_vars[SERVER_ENV_VAR]
     assert settings.database == env_vars[DATABASE_ENV_VAR]
     assert settings.driver == env_vars[DRIVER_ENV_VAR]
-
 
 
 # @pytest.mark.parametrize(

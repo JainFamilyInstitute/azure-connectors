@@ -21,7 +21,6 @@ class AzureBlobServiceSettings(BaseModel):
     # default=None prevents type complaints when using env settings.
     storage_account: StorageAccountName = Field(default=None)
     # TODO -- allow specifying storage account or account_url in env
-    
 
     @computed_field  # type: ignore
     @property
@@ -46,5 +45,3 @@ class AzureBlobServiceSettings(BaseModel):
         return {
             "account_url": self.account_url,
         }
-    
- 

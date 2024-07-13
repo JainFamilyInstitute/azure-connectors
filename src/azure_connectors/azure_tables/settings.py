@@ -22,7 +22,6 @@ class AzureTableSettings(BaseModel):
     # default=None prevents type complaints when using env settings.
     storage_account: StorageAccountName = Field(default=None)
 
-    
     @computed_field  # type: ignore
     @property
     def server(self) -> str:

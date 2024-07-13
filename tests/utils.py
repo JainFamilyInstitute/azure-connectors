@@ -60,7 +60,10 @@ def pack_dict_of_dicts(
 
     return packed
 
-def generate_assignments(dict_of_dicts: dict[str, EnvDict]) -> Iterator[dict[str,EnvDict]]:
+
+def generate_assignments(
+    dict_of_dicts: dict[str, EnvDict],
+) -> Iterator[dict[str, EnvDict]]:
     """
     Generate all possible combinations of assignments given a dictionary of possible variable assignments.
 
@@ -115,11 +118,14 @@ def generate_assignments(dict_of_dicts: dict[str, EnvDict]) -> Iterator[dict[str
 
     # Create the combined dicts
     for combination in itertools.product(*combinations):
-        combined_dict: dict[str, EnvDict] = {assignment_method: {} for assignment_method in dict_of_dicts.keys()}
+        combined_dict: dict[str, EnvDict] = {
+            assignment_method: {} for assignment_method in dict_of_dicts.keys()
+        }
         for sub_dict in combination:
             for assignment_method, method_dict in sub_dict.items():
                 combined_dict[assignment_method].update(method_dict)
         yield combined_dict
+
 
 def generate_scenarios(
     *,
@@ -128,7 +134,7 @@ def generate_scenarios(
     passed_vars: Optional[EnvDict] = None,
     unrelated_vars: Optional[EnvDict] = None,
     excluded_vars: Optional[EnvSet] = None,
-) -> Iterator[tuple[dict[str,EnvDict], EnvDict]]:
+) -> Iterator[tuple[dict[str, EnvDict], EnvDict]]:
     """
     Generate scenarios for testing environment variable assignments.
 
@@ -160,7 +166,7 @@ def generate_scenarios(
         logger.warning(
             f"Excluded variables found in env_vars, envfile_vars, or passed_vars: {omitted_overlap}"
         )
-    
+
     # add unrelated vars to both env_vars and envfile_vars
     if unrelated_vars:
         env_vars.update(unrelated_vars)
@@ -176,4 +182,4 @@ def generate_scenarios(
                 **assignment["envfile_vars"],
                 **assignment["passed_vars"],
             },
-        ) 
+        )
