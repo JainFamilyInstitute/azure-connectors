@@ -114,6 +114,10 @@ class AzureCredential:
         Returns:
             str: The subscription ID.
         """
-        client = SubscriptionClient(self.base_credential)
-        subscription = next(client.subscriptions.list())
-        return subscription.subscription_id
+        try:
+            client = SubscriptionClient(self.base_credential)
+            subscription = next(iter(client.subscriptions.list()))
+            return subscription.subscription_id # type: ignore
+        
+        except Exception as e:
+            raise RuntimeError("Failed to obtain subscription ID") from e

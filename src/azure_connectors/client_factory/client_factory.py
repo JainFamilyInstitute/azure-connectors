@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Protocol, Type
 
+
+from azure.core.credentials import TokenCredential
 from azure_connectors.config import CredentialScope
 from azure_connectors.credential import AzureCredential
 from azure_connectors.utils import get_parameters
@@ -11,8 +13,11 @@ class SettingsClass(Protocol):
     def client_settings(self) -> dict[str, Any]: ...
 
 
+class AzureAPIClient(Protocol):
+    def __init__(self, *args: Any, credential: TokenCredential, **kwargs: Any): ...
+
 class BaseClientFactory(ABC):
-    base_class: Type[Any]
+    base_class: Type[AzureAPIClient]
     settings_class: Type[SettingsClass]
     scope: CredentialScope
 

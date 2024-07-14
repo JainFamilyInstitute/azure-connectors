@@ -15,6 +15,7 @@ azure-common==1.1.28
     # via azure-mgmt-sql
     # via azure-mgmt-subscription
 azure-core==1.30.2
+    # via azure-connectors
     # via azure-data-tables
     # via azure-identity
     # via azure-mgmt-core
