@@ -8,10 +8,10 @@ from azure.mgmt.subscription import SubscriptionClient
 from pydantic import SecretBytes
 
 from azure_connectors.config.enums import CredentialScope
-from azure_connectors.credential.settings import AzureCredentialSettings
-from azure_connectors.credential.types import BaseCredential
 
 from .enums import CredentialSource
+from .settings import AzureCredentialSettings
+from .typing import BaseCredential
 
 
 @dataclass(frozen=True)
@@ -117,7 +117,7 @@ class AzureCredential:
         try:
             client = SubscriptionClient(self.base_credential)
             subscription = next(iter(client.subscriptions.list()))
-            return subscription.subscription_id # type: ignore
-        
+            return subscription.subscription_id  # type: ignore
+
         except Exception as e:
             raise RuntimeError("Failed to obtain subscription ID") from e
