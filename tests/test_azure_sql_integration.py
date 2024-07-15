@@ -4,6 +4,7 @@ from pydantic import SecretBytes
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 
+
 @pytest.mark.integration
 def test_sql_connection_authentication(monkeypatch):
     from azure_connectors import AzureSqlConnection
