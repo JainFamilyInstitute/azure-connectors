@@ -9,6 +9,8 @@
 #   generate-hashes: false
 
 -e file:.
+alabaster==0.7.16
+    # via sphinx
 annotated-types==0.7.0
     # via pydantic
 azure-common==1.1.28
@@ -34,6 +36,8 @@ azure-mgmt-subscription==3.1.1
     # via azure-connectors
 azure-storage-blob==12.20.0
     # via azure-connectors
+babel==2.15.0
+    # via sphinx
 certifi==2024.7.4
     # via msrest
     # via requests
@@ -51,6 +55,8 @@ cryptography==42.0.8
     # via pyjwt
 distlib==0.3.8
     # via virtualenv
+docutils==0.21.2
+    # via sphinx
 filelock==3.15.4
     # via virtualenv
 greenlet==3.0.3
@@ -60,6 +66,8 @@ identify==2.5.36
 idna==3.7
     # via requests
     # via yarl
+imagesize==1.4.1
+    # via sphinx
 iniconfig==2.0.0
     # via pytest
 isodate==0.6.1
@@ -67,8 +75,12 @@ isodate==0.6.1
     # via azure-storage-blob
     # via msrest
 isort==5.13.2
+jinja2==3.1.4
+    # via sphinx
 loguru==0.7.2
     # via azure-connectors
+markupsafe==2.1.5
+    # via jinja2
 msal==1.29.0
     # via azure-identity
     # via msal-extensions
@@ -88,6 +100,7 @@ oauthlib==3.2.2
     # via requests-oauthlib
 packaging==24.1
     # via pytest
+    # via sphinx
 platformdirs==4.2.2
     # via virtualenv
 pluggy==1.5.0
@@ -104,6 +117,8 @@ pydantic-core==2.20.1
     # via pydantic
 pydantic-settings==2.3.4
     # via azure-connectors
+pygments==2.18.0
+    # via sphinx
 pyjwt==2.8.0
     # via msal
 pyodbc==5.1.0
@@ -120,12 +135,30 @@ requests==2.32.3
     # via msal
     # via msrest
     # via requests-oauthlib
+    # via sphinx
 requests-oauthlib==2.0.0
     # via msrest
 ruff==0.5.1
 six==1.16.0
     # via azure-core
     # via isodate
+snowballstemmer==2.2.0
+    # via sphinx
+sphinx==7.4.3
+    # via sphinx-autodoc-typehints
+sphinx-autodoc-typehints==2.2.2
+sphinxcontrib-applehelp==1.0.8
+    # via sphinx
+sphinxcontrib-devhelp==1.0.6
+    # via sphinx
+sphinxcontrib-htmlhelp==2.0.5
+    # via sphinx
+sphinxcontrib-jsmath==1.0.1
+    # via sphinx
+sphinxcontrib-qthelp==1.0.7
+    # via sphinx
+sphinxcontrib-serializinghtml==1.1.10
+    # via sphinx
 sqlalchemy==2.0.31
     # via azure-connectors
 typing-extensions==4.12.2
