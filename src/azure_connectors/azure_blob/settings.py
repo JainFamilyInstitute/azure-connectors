@@ -8,7 +8,7 @@ from azure_connectors.validation import StorageAccountName
 @with_env_settings(env_prefix=EnvPrefix.AZURE_BLOB)
 class AzureBlobServiceSettings(BaseModel):
     """
-    Represents the settings for connecting to Azure Blob Storage.
+    Represents the settings for Azure BlobServiceClient.
     Settings not passed in will be read from from the environment or the ".env" file,
     assuming the prefix "AZURE_BLOB_" (defined in azure_connectors.config.enums).
 
@@ -44,4 +44,63 @@ class AzureBlobServiceSettings(BaseModel):
         """
         return {
             "account_url": self.account_url,
+        }
+
+
+class AzureContainerSettings(AzureBlobServiceSettings):
+    """
+    Represents the settings for Azure (Blob) ContainerClient.
+    Settings not passed in will be read from from the environment or the ".env" file,
+    assuming the prefix "AZURE_BLOB_" (defined in azure_connectors.config.enums).
+
+    Attributes:
+        storage_account (StorageAccountName): The storage account name.
+        account_url (str): The storage account URL.
+        container_name (str): The container name.
+    """
+
+    container_name: str = Field(default=None)
+
+    @computed_field  # type: ignore
+    @property
+    def client_settings(self) -> dict:
+        """
+        Generates the client settings for the container.
+
+        Returns:
+            The client settings.
+        """
+        return {
+            **super().client_settings,
+            "container_name": self.container_name,
+        }
+
+
+class AzureBlobSettings(AzureContainerSettings):
+    """
+    Represents the settings for Azure BlobClient.
+    Settings not passed in will be read from from the environment or the ".env" file,
+    assuming the prefix "AZURE_BLOB_" (defined in azure_connectors.config.enums).
+
+    Attributes:
+        storage_account (StorageAccountName): The storage account name.
+        account_url (str): The storage account URL.
+        container_name (str): The container name.
+        blob_name (str): The blob name.
+    """
+
+    blob_name: str = Field(default=None)
+
+    @computed_field  # type: ignore
+    @property
+    def client_settings(self) -> dict:
+        """
+        Generates the client settings for the blob.
+
+        Returns:
+            The client settings.
+        """
+        return {
+            **super().client_settings,
+            "blob_name": self.blob_name,
         }
