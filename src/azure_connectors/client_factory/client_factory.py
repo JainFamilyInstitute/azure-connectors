@@ -6,13 +6,12 @@ from azure_connectors.credential import AzureCredential
 from azure_connectors.utils import get_parameters
 
 from .typing import (
-    AzureSDKClient,
     CredParamMap,
-    DynamicAzureClientWithFromEnv,
     SettingsClass,
     TokenCredential,
 )
 
+# from .typing import DynamicAzureClientWithFromEnv, AzureSDKClient
 
 class BaseClientFactory(ABC):
     """
@@ -34,14 +33,14 @@ class BaseClientFactory(ABC):
 
     """
 
-    base_class: Type[AzureSDKClient]
+    base_class: Type[Any]
     settings_class: Type[SettingsClass]
     scope: CredentialScope
     cred_param_map: CredParamMap
 
     def __init__(
         self,
-        base_class: Type[AzureSDKClient],
+        base_class: Type[Any],
         settings_class: Type[SettingsClass],
         scope: CredentialScope,
     ):
@@ -50,7 +49,7 @@ class BaseClientFactory(ABC):
         self.scope = scope
 
     @property
-    def client(self) -> Type[DynamicAzureClientWithFromEnv]:
+    def client(self): # -> Type[DynamicAzureClientWithFromEnv]:  # type: ignore
         """
         The main factory function for creating a client class by providing an Azure SDK Client class
         with a `from_env` class method.
@@ -69,7 +68,7 @@ class BaseClientFactory(ABC):
                 super().__init__(*args, credential=credential, **kwargs)  # type: ignore
 
             @classmethod
-            def from_env(cls, *args, **kwargs) -> AzureSDKClient:
+            def from_env(cls, *args, **kwargs):  # -> AzureSDKClient:
                 """
                 The `from_env` method should return an instance of the base Azure SDK Client class with settings
                 generated from coherently combining any passed arguments with those read from the environment.
