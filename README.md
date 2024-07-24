@@ -11,6 +11,15 @@ Authentication to Azure services is passwordless, using Entra ID (aka Azure AD).
 
 ## Usage
 
+There are two main entrypoints to the library:
+- a connector for Azure SQL, `AzureSqlConnection`
+  - this has a property `.engine` that returns a sqlalchemy `Engine` object suitable for direct use with pandas `to_sql` methods.
+- shadow constructors for Azure SDK `Client` objects.
+  - These add a `.from_env()` method to create the object using relevant environment variables instead of passing creation arguments; any arguments passed to `from_env` will override environment values.
+  - Once created, these are core Azure SDK objects, so any documentation or how-to guides you find that use these classes should work without modification (apart from creating with, e.g., `client = BlobServiceClient.from_env()`.
+  - Currently implemented: `BlobServiceClient`, `BlobClient`, `ContainerClient`, `TableServiceClient`, and `SqlManagementClient`.  
+
+## Examples
 ### Azure SQL
 #### Pandas
 ```python
