@@ -7,7 +7,7 @@ For compatibility with Container Apps and Azure Functions, settings are passed a
 No environment variables should contain secrets!
 
 ## Authentication
-Authentication to Azure services is passwordless, using Entra ID (aka Azure AD). For local development, specify `AZURE_CREDENTIAL_SOURCE=cli` in the `.env` or as an environment variable. For deployment in an app service, container app, or function, speciry `AZURE_CREDENTIAL_SOURCE=default`.
+Authentication to Azure services is passwordless, using Entra ID (aka Azure AD). For local development, specify `AZURE_CREDENTIAL_SOURCE=cli` in the `.env` or as an environment variable. For deployment in an app service, container app, or function, specify `AZURE_CREDENTIAL_SOURCE=default`.
 
 ## Usage
 
