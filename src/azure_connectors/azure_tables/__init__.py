@@ -1,1 +1,1 @@
-from .api_clients import TableServiceClient as TableServiceClient
+from .sdk_clients import TableServiceClient as TableServiceClient
