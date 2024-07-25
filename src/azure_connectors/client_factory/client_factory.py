@@ -49,7 +49,9 @@ class BaseClientFactory(ABC):
     def client(self):  # -> Type[DynamicAzureClientWithFromEnv]:  # type: ignore
         """
         The main factory function for creating a client class by providing an Azure SDK Client class
-        with a `from_env` class method.
+        with a `from_env` class method. The client classes are perfect shadows: any (attempted) initialization
+        of them, either directly or through the `from_env` method, actually initializes and returns an instance
+        of the underlying Azure SDK Client class.
 
         Returns:
             Type[DynamicAzureClientWithFromEnv]: A dynamically created client class with a `from_env` class method.
@@ -58,11 +60,11 @@ class BaseClientFactory(ABC):
         base_class = self.base_class
 
         class DynamicAzureClient(base_class):  # type: ignore
-            def __init__(self, *args, credential: TokenCredential, **kwargs):
+            def __new__(cls, *args, credential: TokenCredential, **kwargs):
                 """
                 Direct initialization of the return class should pass through to the base Azure SDK Client class.
                 """
-                super().__init__(*args, credential=credential, **kwargs)  # type: ignore
+                return base_class(*args, credential=credential, **kwargs)  # type: ignore
 
             @classmethod
             def from_env(cls, *args, **kwargs):  # -> AzureSDKClient:
@@ -74,9 +76,8 @@ class BaseClientFactory(ABC):
                 client_kwargs = self._update_client_kwargs_with_credential(
                     self.cred_param_map, client_kwargs
                 )
-                return self.base_class(*args, **client_kwargs)
+                return base_class(*args, **client_kwargs)
 
-        DynamicAzureClient.__name__ = self.base_class.__name__
         return DynamicAzureClient
 
     def _get_client_kwargs(self, kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -151,7 +152,7 @@ class ClientFactory(BaseClientFactory):
     cred_param_map: CredParamMap = {"base_credential": "credential"}
 
 
-class SqlManagementClientFactory(ClientFactory):
+class SqlManagementClientFactory(BaseClientFactory):
     cred_param_map: CredParamMap = {
         "base_credential": "credential",
         "subscription_id": "subscription_id",
