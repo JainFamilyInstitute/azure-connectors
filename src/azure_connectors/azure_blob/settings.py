@@ -1,12 +1,11 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import Field, computed_field
+from pydantic_settings import BaseSettings
 
-from azure_connectors.config import EnvPrefix
-from azure_connectors.utils import with_env_settings
+from azure_connectors.config import EnvPrefix, get_settings_config
 from azure_connectors.validation import StorageAccountName
 
 
-@with_env_settings(env_prefix=EnvPrefix.AZURE_BLOB)
-class BlobServiceClientSettings(BaseModel):
+class BlobServiceClientSettings(BaseSettings):
     """
     Represents the settings for Azure BlobServiceClient.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -18,8 +17,10 @@ class BlobServiceClientSettings(BaseModel):
 
     """
 
+    model_config = get_settings_config(EnvPrefix.AZURE_BLOB)
+
     # default=None prevents type complaints when using env settings.
-    storage_account: StorageAccountName = Field(default=None)
+    storage_account: StorageAccountName = Field(default=None, exclude=True)
     # TODO -- allow specifying storage account or account_url in env
 
     @computed_field  # type: ignore
@@ -32,19 +33,6 @@ class BlobServiceClientSettings(BaseModel):
             The connection string.
         """
         return f"https://{self.storage_account}.blob.core.windows.net"
-
-    @computed_field  # type: ignore
-    @property
-    def client_settings(self) -> dict:
-        """
-        Generates the client settings for the storage account.
-
-        Returns:
-            The client settings.
-        """
-        return {
-            "account_url": self.account_url,
-        }
 
 
 class ContainerClientSettings(BlobServiceClientSettings):
@@ -61,20 +49,6 @@ class ContainerClientSettings(BlobServiceClientSettings):
 
     container_name: str = Field(default=None)
 
-    @computed_field  # type: ignore
-    @property
-    def client_settings(self) -> dict:
-        """
-        Generates the client settings for the container.
-
-        Returns:
-            The client settings.
-        """
-        return {
-            **super().client_settings,
-            "container_name": self.container_name,
-        }
-
 
 class BlobClientSettings(ContainerClientSettings):
     """
@@ -90,17 +64,3 @@ class BlobClientSettings(ContainerClientSettings):
     """
 
     blob_name: str = Field(default=None)
-
-    @computed_field  # type: ignore
-    @property
-    def client_settings(self) -> dict:
-        """
-        Generates the client settings for the blob.
-
-        Returns:
-            The client settings.
-        """
-        return {
-            **super().client_settings,
-            "blob_name": self.blob_name,
-        }
