@@ -6,7 +6,7 @@ from azure_connectors.validation import StorageAccountName
 
 
 @with_env_settings(env_prefix=EnvPrefix.AZURE_BLOB)
-class AzureBlobServiceSettings(BaseModel):
+class BlobServiceClientSettings(BaseModel):
     """
     Represents the settings for Azure BlobServiceClient.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -47,7 +47,7 @@ class AzureBlobServiceSettings(BaseModel):
         }
 
 
-class AzureContainerSettings(AzureBlobServiceSettings):
+class ContainerClientSettings(BlobServiceClientSettings):
     """
     Represents the settings for Azure (Blob) ContainerClient.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -76,7 +76,7 @@ class AzureContainerSettings(AzureBlobServiceSettings):
         }
 
 
-class AzureBlobSettings(AzureContainerSettings):
+class BlobClientSettings(ContainerClientSettings):
     """
     Represents the settings for Azure BlobClient.
     Settings not passed in will be read from from the environment or the ".env" file,

@@ -6,7 +6,7 @@ from azure_connectors.validation import StorageAccountName
 
 
 @with_env_settings(env_prefix=EnvPrefix.AZURE_TABLES)
-class AzureTableSettings(BaseModel):
+class TableServiceClientSettings(BaseModel):
     """
     Represents the settings for connecting to Azure Tables on Azure storage accounts.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -33,8 +33,6 @@ class AzureTableSettings(BaseModel):
         """
         return f"https://{self.storage_account}.table.core.windows.net"
 
-
-class AzureTableServiceSettings(AzureTableSettings):
     @computed_field  # type: ignore
     @property
     def client_settings(self) -> dict:
