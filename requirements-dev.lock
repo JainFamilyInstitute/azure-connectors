@@ -22,6 +22,7 @@ azure-core==1.30.2
     # via azure-identity
     # via azure-mgmt-core
     # via azure-storage-blob
+    # via azure-storage-file-datalake
     # via msrest
 azure-data-tables==12.5.0
     # via azure-connectors
@@ -34,7 +35,10 @@ azure-mgmt-sql==3.0.1
     # via azure-connectors
 azure-mgmt-subscription==3.1.1
     # via azure-connectors
-azure-storage-blob==12.20.0
+azure-storage-blob==12.21.0
+    # via azure-connectors
+    # via azure-storage-file-datalake
+azure-storage-file-datalake==12.16.0
     # via azure-connectors
 babel==2.15.0
     # via sphinx
@@ -73,6 +77,7 @@ iniconfig==2.0.0
 isodate==0.6.1
     # via azure-data-tables
     # via azure-storage-blob
+    # via azure-storage-file-datalake
     # via msrest
 isort==5.13.2
 jinja2==3.1.4
@@ -166,6 +171,7 @@ typing-extensions==4.12.2
     # via azure-data-tables
     # via azure-identity
     # via azure-storage-blob
+    # via azure-storage-file-datalake
     # via mypy
     # via pydantic
     # via pydantic-core
