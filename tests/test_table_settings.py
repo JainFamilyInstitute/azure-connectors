@@ -46,7 +46,8 @@ def test_scenarios(setup_env, expected_value, import_class):
     # Assert that the environment variable is read correctly
     assert settings.storage_account == expected_storage_account
     assert (
-        settings.endpoint == f"https://{expected_storage_account}.table.core.windows.net"
+        settings.endpoint
+        == f"https://{expected_storage_account}.table.core.windows.net"
     )
 
 

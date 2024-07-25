@@ -16,6 +16,7 @@ class DataLakeServiceClientSettings(BaseSettings):
         account_url (str): The storage account URL.
 
     """
+
     model_config = get_settings_config(EnvPrefix.AZURE_DATALAKE)
 
     # default=None prevents type complaints when using env settings.
@@ -33,7 +34,6 @@ class DataLakeServiceClientSettings(BaseSettings):
         """
         return f"https://{self.storage_account}.dfs.core.windows.net"
 
-  
 
 class FileSystemClientSettings(DataLakeServiceClientSettings):
     """
@@ -49,7 +49,7 @@ class FileSystemClientSettings(DataLakeServiceClientSettings):
 
     file_system_name: str = Field(default=None)
 
-  
+
 class DataLakeDirectoryClientSettings(FileSystemClientSettings):
     """
     Represents the settings for Azure DataLakeDirectoryClient.

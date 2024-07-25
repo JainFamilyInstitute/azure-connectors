@@ -11,7 +11,6 @@ from .settings import (
     ContainerClientSettings,
 )
 
-
 BlobServiceClient = ClientFactory(
     AzBlobServiceClient,
     settings_class=BlobServiceClientSettings,
