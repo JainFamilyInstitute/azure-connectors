@@ -76,7 +76,7 @@ class BaseClientFactory(ABC):
                 """
                 client_kwargs = self._get_client_kwargs(kwargs)
                 client_kwargs = self._update_client_kwargs_with_credential(
-                    self.cred_param_map, client_kwargs
+                    client_kwargs
                 )
                 return base_class(*args, **client_kwargs)
 
@@ -128,20 +128,19 @@ class BaseClientFactory(ABC):
         return settings_kwargs, remaining_kwargs
 
     def _update_client_kwargs_with_credential(
-        self, cred_param_map: CredParamMap, client_kwargs: dict[str, Any]
+        self, client_kwargs: dict[str, Any]
     ) -> dict[str, Any]:
         """
         Updates the client_kwargs dictionary with credentials obtained from the AzureCredential provider.
 
         Args:
-            cred_param_map (CredParamMap): A dictionary mapping AzureCreential properties to client class parameter names.
             client_kwargs (dict[str, Any]): The client_kwargs dictionary to be updated.
 
         Returns:
             dict[str, Any]: The updated client_kwargs dictionary.
         """
         credential_provider = AzureCredential.from_env(scope=self.scope)
-        for credential_property, param_name in cred_param_map.items():
+        for credential_property, param_name in self.cred_param_map.items():
             if param_name not in client_kwargs.keys():
                 client_kwargs.update(
                     {param_name: getattr(credential_provider, credential_property)}
