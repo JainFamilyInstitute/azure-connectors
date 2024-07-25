@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from utils import generate_scenarios
 
 module_name = "azure_connectors.azure_tables.settings"
-class_name = "AzureTableSettings"
+class_name = "TableServiceClientSettings"
 
 SCOPE_PREFIX = "AZURE_TABLES_"
 

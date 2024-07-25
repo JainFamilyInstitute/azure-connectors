@@ -38,7 +38,7 @@ class AzureSqlSettings(BaseModel):
         return f"DRIVER={self.driver};SERVER={self.server};DATABASE={self.database};"
 
 
-class AzureSqlManagementClientSettings(AzureSqlSettings):
+class SqlManagementClientSettings(AzureSqlSettings):
     @computed_field  # type: ignore
     @property
     def client_settings(self) -> dict:

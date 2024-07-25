@@ -5,13 +5,10 @@ from azure_connectors.config import CredentialScope
 from azure_connectors.credential import AzureCredential
 from azure_connectors.utils import get_parameters
 
-from .typing import (
-    CredParamMap,
-    SettingsClass,
-    TokenCredential,
-)
+from .typing import CredParamMap, SettingsClass, TokenCredential
 
 # from .typing import DynamicAzureClientWithFromEnv, AzureSDKClient
+
 
 class BaseClientFactory(ABC):
     """
@@ -49,7 +46,7 @@ class BaseClientFactory(ABC):
         self.scope = scope
 
     @property
-    def client(self): # -> Type[DynamicAzureClientWithFromEnv]:  # type: ignore
+    def client(self):  # -> Type[DynamicAzureClientWithFromEnv]:  # type: ignore
         """
         The main factory function for creating a client class by providing an Azure SDK Client class
         with a `from_env` class method.
