@@ -35,7 +35,7 @@ def with_env_settings(
 
     Example:
         @with_model_config(env_prefix="AZURE_MAGIC_")
-        class AzureMagicSettings(BaseSettings):
+        class AzureMagicSettings(BaseModel):
             # class definition
     """
 
