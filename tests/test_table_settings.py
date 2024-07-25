@@ -46,7 +46,7 @@ def test_scenarios(setup_env, expected_value, import_class):
     # Assert that the environment variable is read correctly
     assert settings.storage_account == expected_storage_account
     assert (
-        settings.server == f"https://{expected_storage_account}.table.core.windows.net"
+        settings.endpoint == f"https://{expected_storage_account}.table.core.windows.net"
     )
 
 
@@ -90,7 +90,7 @@ def test_direct_instantiation(setup_env, import_class):
     # Ensure that the settings can be instantiated without any environment variables
     settings = import_class(storage_account="testaccount")
     assert settings.storage_account == "testaccount"
-    assert settings.server == "https://testaccount.table.core.windows.net"
+    assert settings.endpoint == "https://testaccount.table.core.windows.net"
 
 
 @pytest.mark.parametrize(

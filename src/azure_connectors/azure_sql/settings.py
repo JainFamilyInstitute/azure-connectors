@@ -1,14 +1,13 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import Field, computed_field
+from pydantic_settings import BaseSettings
 
-from azure_connectors.config import EnvPrefix
-from azure_connectors.utils import with_env_settings
+from azure_connectors.config import EnvPrefix, get_settings_config
 from azure_connectors.validation import AzureSqlDatabaseName, AzureSqlServerDomainName
 
 from .constants import AZURE_SQL_DEFAULT_DRIVER
 
 
-@with_env_settings(env_prefix=EnvPrefix.AZURE_SQL)
-class AzureSqlSettings(BaseModel):
+class AzureSqlSettings(BaseSettings):
     """
     Represents the settings for connecting to Azure SQL.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -21,12 +20,13 @@ class AzureSqlSettings(BaseModel):
 
     """
 
-    # default=None prevents type complaints when using env settings.
-    server: AzureSqlServerDomainName = Field(default=None)
-    database: AzureSqlDatabaseName = Field(default=None)
-    driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER)
+    model_config = get_settings_config(EnvPrefix.AZURE_SQL)
 
-    @computed_field  # type: ignore
+    # default=None prevents type complaints when using env settings.
+    server: AzureSqlServerDomainName = Field(default=None, exclude=True)
+    database: AzureSqlDatabaseName = Field(default=None, exclude=True)
+    driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER, exclude=True)
+
     @property
     def connection_string(self) -> str:
         """
@@ -41,13 +41,5 @@ class AzureSqlSettings(BaseModel):
 class SqlManagementClientSettings(AzureSqlSettings):
     @computed_field  # type: ignore
     @property
-    def client_settings(self) -> dict:
-        """
-        Generates the client settings for the storage account.
-
-        Returns:
-            The client settings.
-        """
-        return {
-            "base_url": self.server,
-        }
+    def base_url(self) -> AzureSqlServerDomainName:
+        return self.server

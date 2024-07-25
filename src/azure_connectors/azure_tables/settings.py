@@ -1,12 +1,11 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import Field, computed_field
+from pydantic_settings import BaseSettings
 
-from azure_connectors.config import EnvPrefix
-from azure_connectors.utils import with_env_settings
+from azure_connectors.config import EnvPrefix, get_settings_config
 from azure_connectors.validation import StorageAccountName
 
 
-@with_env_settings(env_prefix=EnvPrefix.AZURE_TABLES)
-class TableServiceClientSettings(BaseModel):
+class TableServiceClientSettings(BaseSettings):
     """
     Represents the settings for connecting to Azure Tables on Azure storage accounts.
     Settings not passed in will be read from from the environment or the ".env" file,
@@ -19,12 +18,14 @@ class TableServiceClientSettings(BaseModel):
 
     """
 
+    model_config = get_settings_config(EnvPrefix.AZURE_TABLES)
+
     # default=None prevents type complaints when using env settings.
-    storage_account: StorageAccountName = Field(default=None)
+    storage_account: StorageAccountName = Field(default=None, exclude=True)
 
     @computed_field  # type: ignore
     @property
-    def server(self) -> str:
+    def endpoint(self) -> str:
         """
         Generates the server address based on the provided settings.
 
@@ -32,16 +33,3 @@ class TableServiceClientSettings(BaseModel):
             The connection string.
         """
         return f"https://{self.storage_account}.table.core.windows.net"
-
-    @computed_field  # type: ignore
-    @property
-    def client_settings(self) -> dict:
-        """
-        Generates the client settings for the storage account.
-
-        Returns:
-            The client settings.
-        """
-        return {
-            "endpoint": self.server,
-        }
