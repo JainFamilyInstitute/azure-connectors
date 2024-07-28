@@ -1,13 +1,11 @@
 from abc import ABC
 from typing import Any, Type
 
-from pydantic_settings import BaseSettings
-
 from azure_connectors.config import CredentialScope
 from azure_connectors.credential import AzureCredential
 from azure_connectors.utils import get_parameters
 
-from .typing import CredParamMap, TokenCredential
+from .typing import CredParamMap, SettingsClass, TokenCredential
 
 # from .typing import DynamicAzureClientWithFromEnv, AzureSDKClient
 
@@ -33,14 +31,14 @@ class BaseClientFactory(ABC):
     """
 
     base_class: Type[Any]
-    settings_class: Type[BaseSettings]
+    settings_class: Type[SettingsClass]
     scope: CredentialScope
     cred_param_map: CredParamMap
 
     def __init__(
         self,
         base_class: Type[Any],
-        settings_class: Type[BaseSettings],
+        settings_class: Type[SettingsClass],
         scope: CredentialScope,
     ):
         self.base_class = base_class
