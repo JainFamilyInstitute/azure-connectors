@@ -8,8 +8,7 @@ CredParamMap = dict[str, str]
 class SettingsClass(Protocol):
     """Interface for various AzureXYZSettings classes."""
 
-    @property
-    def client_settings(self) -> dict[str, Any]: ...
+    def model_dump(self) -> dict[str, Any]: ...
 
 
 @runtime_checkable
