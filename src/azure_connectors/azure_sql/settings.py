@@ -1,7 +1,7 @@
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings
 
-from azure_connectors.config import EnvPrefix, get_settings_config
+from azure_connectors.config import CredentialScope, EnvPrefix, get_settings_config
 from azure_connectors.validation import AzureSqlDatabaseName, AzureSqlServerDomainName
 
 from .constants import AZURE_SQL_DEFAULT_DRIVER
@@ -26,6 +26,10 @@ class AzureSqlSettings(BaseSettings):
     server: AzureSqlServerDomainName = Field(default=None, exclude=True)
     database: AzureSqlDatabaseName = Field(default=None, exclude=True)
     driver: str = Field(default=AZURE_SQL_DEFAULT_DRIVER, exclude=True)
+
+    default_credential_scope: CredentialScope = Field(
+        default=CredentialScope.AZURE_SQL, exclude=True
+    )
 
     @property
     def connection_string(self) -> str:

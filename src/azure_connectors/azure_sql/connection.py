@@ -25,8 +25,6 @@ class AzureSqlConnection:
     settings: AzureSqlSettings
     credential: AzureCredential
 
-    CREDENTIAL_SCOPE: CredentialScope = CredentialScope.AZURE_SQL
-
     @classmethod
     def from_env(cls) -> "AzureSqlConnection":
         """
@@ -36,7 +34,7 @@ class AzureSqlConnection:
             AzureSqlConnection: An instance of AzureSqlConnection.
         """
         settings = AzureSqlSettings()
-        credential = AzureCredential.from_env(scope=cls.CREDENTIAL_SCOPE)
+        credential = AzureCredential.from_env(scope=settings.default_credential_scope)
         return cls(settings=settings, credential=credential)
 
     @cached_property

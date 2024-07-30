@@ -1,7 +1,7 @@
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings
 
-from azure_connectors.config import EnvPrefix, get_settings_config
+from azure_connectors.config import CredentialScope, EnvPrefix, get_settings_config
 from azure_connectors.validation import StorageAccountName
 
 
@@ -22,6 +22,10 @@ class TableServiceClientSettings(BaseSettings):
 
     # default=None prevents type complaints when using env settings.
     storage_account: StorageAccountName = Field(default=None, exclude=True)
+
+    default_credential_scope: CredentialScope = Field(
+        default=CredentialScope.AZURE_TABLES, exclude=True
+    )
 
     @computed_field  # type: ignore
     @property
