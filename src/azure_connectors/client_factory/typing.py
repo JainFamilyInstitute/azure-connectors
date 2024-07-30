@@ -2,11 +2,13 @@ from typing import Any, Protocol, runtime_checkable
 
 from azure.core.credentials import TokenCredential
 
-CredParamMap = dict[str, str]
+from azure_connectors.config import CredentialScope
 
 
-class SettingsClass(Protocol):
+class ClientSettings(Protocol):
     """Interface for various AzureXYZSettings classes."""
+
+    default_credential_scope: CredentialScope
 
     def model_dump(self) -> dict[str, Any]: ...
 
