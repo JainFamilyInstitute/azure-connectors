@@ -4,13 +4,21 @@ from azure.core.credentials import TokenCredential
 
 from azure_connectors.config import CredentialScope
 
+class ModelProtocol(Protocol):
+    """Interface for classes with a model_dump method."""
 
-class ClientSettings(Protocol):
+    def model_dump(self) -> dict[str, Any]: ...
+
+class ClientSettingsProtocol(ModelProtocol):
     """Interface for various AzureXYZSettings classes."""
 
     default_credential_scope: CredentialScope
 
-    def model_dump(self) -> dict[str, Any]: ...
+
+class CredentialAdapterProtocol(ModelProtocol):
+    """Interface for credential adapters."""
+
+    def __init__(self, credential): ...
 
 
 @runtime_checkable

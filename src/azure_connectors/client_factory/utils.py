@@ -2,11 +2,11 @@ from typing import Any, Type
 
 from azure_connectors.utils import split_init_kwargs
 
-from .typing import ClientSettings
+from .typing import ClientSettingsProtocol, ModelProtocol
 
 
-def get_client_kwargs(
-    kwargs: dict[str, Any], settings_class: Type[ClientSettings]
+def get_client_kwargs_from_settings(
+    kwargs: dict[str, Any], settings_class: Type[ClientSettingsProtocol]
 ) -> dict[str, Any]:
     """
     Logic for sensible handling of passed keyword arguments for from_env:
@@ -24,7 +24,26 @@ def get_client_kwargs(
     """
     settings_kwargs, base_kwargs = split_init_kwargs(kwargs, settings_class)
     settings = settings_class(**settings_kwargs)
-    client_kwargs = settings.model_dump()
+    client_kwargs = add_model_dump_to_kwargs(base_kwargs, settings)
     client_kwargs.update(base_kwargs)
 
     return client_kwargs
+
+def get_client_kwargs_from_credential(
+        kwargs: dict[str, Any], credential_adapter: ModelProtocol
+): ...
+
+def add_model_dump_to_kwargs(kwargs: dict[str, Any], model: ModelProtocol):
+    """
+    Adds the model dump to the given keyword arguments. Existing keys will not be overwritten.
+
+    Args:
+        kwargs (dict[str, Any]): The keyword arguments to which the model dump will be added.
+        model (ModelProtocol): The model object from which the dump will be extracted.
+
+    Returns:
+        dict[str, Any]: The updated keyword arguments with the model dump added.
+    """
+    model_kwargs = model.model_dump()
+    model_kwargs.update(kwargs)
+    return model_kwargs

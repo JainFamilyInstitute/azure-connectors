@@ -1,13 +1,45 @@
 from abc import ABC
-from typing import Any, Type
+from typing import Any, Optional, Type
 
 from azure_connectors.config import CredentialScope
-from azure_connectors.credential import AzureCredential
-from azure_connectors.utils import get_parameters
+from azure_connectors.credential import AzureCredential, CredentialAdapter
+from azure_connectors.utils import get_parameters, update_dict_from_object_properties
 
-from .typing import CredParamMap, SettingsClass, TokenCredential
+from .typing import ClientSettingsProtocol, CredentialAdapterProtocol, TokenCredential
+from .utils import get_client_kwargs_from_settings
 
 # from .typing import DynamicAzureClientWithFromEnv, AzureSDKClient
+
+
+def add_fromenv_method(
+    base_class: Type[Any],
+    settings_class: Type[ClientSettingsProtocol],
+    credential_adapter_class: Type[CredentialAdapterProtocol] = CredentialAdapter,
+) -> Type[Any]:
+    class DynamicAzureClient(base_class):  # type: ignore
+        def __new__(cls, *args, credential: TokenCredential, **kwargs):
+            """
+            Direct initialization of the return class should pass through to the base Azure SDK Client class.
+            """
+            return base_class(*args, credential=credential, **kwargs)  # type: ignore
+
+        @classmethod
+        def from_env(cls, *args, **kwargs):  # -> AzureSDKClient:
+            """
+            The `from_env` method should return an instance of the base Azure SDK Client class with settings
+            generated from coherently combining any passed arguments with those read from the environment.
+            """
+            client_kwargs = get_client_kwargs_from_settings(kwargs, settings_class)
+            credential_provider = AzureCredential.from_env(
+                scope=settings_class.default_credential_scope
+            )
+            credential_kwargs = credential_adapter_class(credential=credential_provider)
+            client_kwargs = update_dict_from_object_properties(
+                client_kwargs, credential_provider, cred_param_map
+            )
+            return base_class(*args, **client_kwargs)
+
+    return DynamicAzureClient
 
 
 class BaseClientFactory(ABC):
@@ -31,14 +63,14 @@ class BaseClientFactory(ABC):
     """
 
     base_class: Type[Any]
-    settings_class: Type[SettingsClass]
+    settings_class: Type[ClientSettingsProtocol]
     scope: CredentialScope
-    cred_param_map: CredParamMap
+    cred_param_map: ParamMap
 
     def __init__(
         self,
         base_class: Type[Any],
-        settings_class: Type[SettingsClass],
+        settings_class: Type[ClientSettingsProtocol],
         scope: CredentialScope,
     ):
         self.base_class = base_class
@@ -148,11 +180,11 @@ class BaseClientFactory(ABC):
 
 
 class ClientFactory(BaseClientFactory):
-    cred_param_map: CredParamMap = {"base_credential": "credential"}
+    cred_param_map: ParamMap = {"base_credential": "credential"}
 
 
 class SqlManagementClientFactory(BaseClientFactory):
-    cred_param_map: CredParamMap = {
+    cred_param_map: ParamMap = {
         "base_credential": "credential",
         "subscription_id": "subscription_id",
     }
