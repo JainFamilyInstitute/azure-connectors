@@ -38,8 +38,6 @@ distlib==0.3.8
     # via virtualenv
 filelock==3.15.4
     # via virtualenv
-greenlet==3.0.3
-    # via sqlalchemy
 identify==2.5.36
     # via pre-commit
 idna==3.7
@@ -71,6 +69,8 @@ platformdirs==4.2.2
     # via virtualenv
 pluggy==1.5.0
     # via pytest
+polars==1.14.0
+    # via azure-connectors
 portalocker==2.10.0
     # via msal-extensions
 pre-commit==3.7.1
