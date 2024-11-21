@@ -11,17 +11,35 @@
 -e file:.
 annotated-types==0.7.0
     # via pydantic
+azure-common==1.1.28
+    # via azure-mgmt-sql
+    # via azure-mgmt-subscription
 azure-core==1.30.2
+    # via azure-connectors
     # via azure-data-tables
     # via azure-identity
+    # via azure-mgmt-core
     # via azure-storage-blob
+    # via azure-storage-file-datalake
+    # via msrest
 azure-data-tables==12.5.0
     # via azure-connectors
 azure-identity==1.17.1
     # via azure-connectors
-azure-storage-blob==12.20.0
+azure-mgmt-core==1.4.0
+    # via azure-mgmt-sql
+    # via azure-mgmt-subscription
+azure-mgmt-sql==3.0.1
+    # via azure-connectors
+azure-mgmt-subscription==3.1.1
+    # via azure-connectors
+azure-storage-blob==12.21.0
+    # via azure-connectors
+    # via azure-storage-file-datalake
+azure-storage-file-datalake==12.16.0
     # via azure-connectors
 certifi==2024.7.4
+    # via msrest
     # via requests
 cffi==1.16.0
     # via cryptography
@@ -40,6 +58,8 @@ idna==3.7
 isodate==0.6.1
     # via azure-data-tables
     # via azure-storage-blob
+    # via azure-storage-file-datalake
+    # via msrest
 loguru==0.7.2
     # via azure-connectors
 msal==1.29.0
@@ -47,8 +67,13 @@ msal==1.29.0
     # via msal-extensions
 msal-extensions==1.2.0
     # via azure-identity
+msrest==0.7.1
+    # via azure-mgmt-sql
+    # via azure-mgmt-subscription
 multidict==6.0.5
     # via yarl
+oauthlib==3.2.2
+    # via requests-oauthlib
 portalocker==2.10.0
     # via msal-extensions
 pycparser==2.22
@@ -69,6 +94,10 @@ python-dotenv==1.0.1
 requests==2.32.3
     # via azure-core
     # via msal
+    # via msrest
+    # via requests-oauthlib
+requests-oauthlib==2.0.0
+    # via msrest
 six==1.16.0
     # via azure-core
     # via isodate
@@ -79,6 +108,7 @@ typing-extensions==4.12.2
     # via azure-data-tables
     # via azure-identity
     # via azure-storage-blob
+    # via azure-storage-file-datalake
     # via pydantic
     # via pydantic-core
     # via sqlalchemy

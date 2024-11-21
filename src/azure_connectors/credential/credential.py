@@ -4,14 +4,18 @@ from functools import cached_property
 from typing import Optional
 
 from azure.identity import AzureCliCredential, DefaultAzureCredential
+from azure.mgmt.subscription import SubscriptionClient
 from pydantic import SecretBytes
 
-from azure_connectors.enums import CredentialSource, CredentialScope
-from azure_connectors.credentials.types import BaseCredential
-from azure_connectors.credentials.settings import AzureCredentialSettings
+from azure_connectors.config.enums import CredentialScope
+
+from .enums import CredentialSource
+from .settings import AzureCredentialSettings
+from .typing import BaseCredential
+
 
 @dataclass(frozen=True)
-class AzureCredentials:
+class AzureCredential:
     """
     Retrieves and stores a credential for accessing Azure SQL databases.
 
@@ -25,12 +29,16 @@ class AzureCredentials:
     """
 
     settings: AzureCredentialSettings
-    _base_credential: BaseCredential = field(init=False, repr=False)
+    base_credential: BaseCredential = field(init=False, repr=False)
 
     @classmethod
-    def from_env(cls, source: Optional[CredentialSource] = None, scope: Optional[CredentialScope] = None) -> "AzureCredentials":
+    def from_env(
+        cls,
+        source: Optional[CredentialSource] = None,
+        scope: Optional[CredentialScope] = None,
+    ) -> "AzureCredential":
         """
-        Creates an instance of `AzureCredentials` by reading settings not explicitly passed from 
+        Creates an instance of `AzureCredentials` by reading settings not explicitly passed from
         environment variables and the .env file.
 
         Args:
@@ -38,14 +46,18 @@ class AzureCredentials:
             scope (Optional[CredentialScope]): The scope of the credentials. If not provided, it will be read from the environment.
 
         Returns:
-            AzureCredentials: An instance of `AzureCredentials` initialized with the settings from environment variables.
+            AzureCredential: An instance of `AzureCredential` initialized with the settings from environment variables.
         """
-        settings = AzureCredentialSettings.from_env(source=source, scope=scope)
+
+        # pass along only the non-None arguments, so Settings can handle the rest from the env
+        pass_args = {k: v for k, v in locals().items() if v is not None and k != "cls"}
+
+        settings = AzureCredentialSettings(**pass_args)
+
         return cls(settings=settings)
-       
 
     def __post_init__(self):
-        object.__setattr__(self, "_base_credential", self._get_azure_credential())
+        object.__setattr__(self, "base_credential", self._get_azure_credential())
 
     def _get_azure_credential(self) -> BaseCredential:
         """
@@ -57,6 +69,9 @@ class AzureCredentials:
         Raises:
             ValueError: If self.settings.source isn't a valid value.
         """
+
+        credential: BaseCredential
+
         match self.settings.source:
             case CredentialSource.CLI:
                 credential = AzureCliCredential()
@@ -79,10 +94,30 @@ class AzureCredentials:
             RuntimeError: If failed to obtain the token.
         """
         try:
-            credential = self._base_credential
-            token_bytes = credential.get_token(str(self.settings.scope.value)).token.encode("UTF-16-LE")
-            token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
+            credential = self.base_credential
+            token_bytes = credential.get_token(
+                str(self.settings.scope.value)
+            ).token.encode("UTF-16-LE")
+            token_struct = struct.pack(
+                f"<I{len(token_bytes)}s", len(token_bytes), token_bytes
+            )
             return SecretBytes(token_struct)
 
         except Exception as e:
             raise RuntimeError("Failed to obtain Azure AD / Entra ID token") from e
+
+    @property
+    def subscription_id(self) -> str:
+        """
+        Retrieves the subscription ID for the Azure credentials.
+
+        Returns:
+            str: The subscription ID.
+        """
+        try:
+            client = SubscriptionClient(self.base_credential)
+            subscription = next(iter(client.subscriptions.list()))
+            return subscription.subscription_id  # type: ignore
+
+        except Exception as e:
+            raise RuntimeError("Failed to obtain subscription ID") from e

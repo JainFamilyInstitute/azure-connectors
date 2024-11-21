@@ -1,6 +1,6 @@
 [project]
 name = "azure-connectors"
-version = "0.1.0"
+version = "0.5.0"
 description = "Python connectors for passwordless login to Azure storage services (SQL, ADLSv2, blob, tables), suitable for local and containerized projects."
 authors = [{ name = "Jerome Hodges", email = "jh4@jainfamilyinstitute.org"}]
 dependencies = [
@@ -12,6 +12,10 @@ dependencies = [
     "loguru>=0.7.2",
     "azure-storage-blob>=12.20.0",
     "azure-data-tables>=12.5.0",
+    "azure-mgmt-subscription>=3.1.1",
+    "azure-mgmt-sql>=3.0.1",
+    "azure-core>=1.30.2",
+    "azure-storage-file-datalake>=12.16.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
@@ -28,6 +32,9 @@ dev-dependencies = [
     "isort>=5.13.2",
     "pre-commit>=3.7.1",
     "pytest>=8.2.2",
+    "pytest-mock>=3.14.0",
+    "coverage>=7.5.4",
+    "sphinx-autodoc-typehints>=2.2.2",
 ]
 
 [tool.hatch.metadata]
@@ -35,3 +42,12 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/azure_connectors"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+per-file-ignores = {"tests/**/*.py" = ["E501"] } #ignore line length in tests
+
+[tool.mypy]
+exclude = ["scratch/.*"]

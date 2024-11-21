@@ -1,2 +1,2 @@
-from .connection import AzureSqlConnection  # noqa: F401
-from .settings import AzureSqlSettings  # noqa: F401
+from .connection import AzureSqlConnection as AzureSqlConnection
+from .sdk_clients import SqlManagementClient as SqlManagementClient
