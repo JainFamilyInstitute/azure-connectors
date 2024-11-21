@@ -12,7 +12,6 @@ dependencies = [
     "loguru>=0.7.2",
     "azure-storage-blob>=12.20.0",
     "azure-data-tables>=12.5.0",
-    "polars>=1.14.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
