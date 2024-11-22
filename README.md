@@ -1,6 +1,9 @@
 # azure-connectors
 Python connectors for passwordless login to Azure storage services (SQL, ADLSv2, blob, tables), suitable for local and containerized projects.
 
+## Disclaimer
+This library is under development and is primarily intended for internal use. No guarantees about stability or maintenance for other uses. Licensing GNU AGPLv3, feedback welcome.
+
 ## Overview
 For compatibility with Container Apps and Azure Functions, settings are passed as environment variables. For local development, create or extend a `.env` file in the project root. For deployment, ensure that the environment variables are set in the app. Example settings are in the `example_envs` folder.
 
