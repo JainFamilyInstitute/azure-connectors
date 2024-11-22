@@ -16,7 +16,6 @@ dependencies = [
     "azure-mgmt-sql>=3.0.1",
     "azure-core>=1.30.2",
     "azure-storage-file-datalake>=12.16.0",
-    "polars>=1.14.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
@@ -36,6 +35,8 @@ dev-dependencies = [
     "pytest-mock>=3.14.0",
     "coverage>=7.5.4",
     "sphinx-autodoc-typehints>=2.2.2",
+    "pandas>=2.2.3",
+    "polars>=1.14.0",
 ]
 
 [tool.hatch.metadata]
