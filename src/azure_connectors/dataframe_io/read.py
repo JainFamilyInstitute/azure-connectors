@@ -1,19 +1,24 @@
 from typing import Any, Literal
-from azure_connectors import AzureSqlConnection
-import sqlalchemy
+
 import polars as pl
+import sqlalchemy
+
+from azure_connectors import AzureSqlConnection
 
 
 def read_df(
     query: str,
+    engine: sqlalchemy.Engine | None = None,
     iter_batches: Literal[False] = False,
     batch_size: int | None = None,
     schema_overrides: pl.Schema | None = None,
     infer_schema_length: int | None = None,
     execute_options: dict[str, Any] | None = None,
 ) -> pl.DataFrame:
-    sql_info = AzureSqlConnection.from_env()
-    engine: sqlalchemy.Engine = sql_info.engine
+    """Note: passing an `engine` will likely speed up execution time."""
+    if engine is None:
+        sql_info = AzureSqlConnection.from_env()
+        engine = sql_info.engine
 
     return pl.read_database(
         query=query,
