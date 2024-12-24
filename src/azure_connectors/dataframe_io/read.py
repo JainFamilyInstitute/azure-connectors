@@ -1,7 +1,9 @@
 from typing import Any, Literal
-from azure_connectors import AzureSqlConnection
-import sqlalchemy
+
 import polars as pl
+import sqlalchemy
+
+from azure_connectors import AzureSqlConnection
 
 
 def read_df(

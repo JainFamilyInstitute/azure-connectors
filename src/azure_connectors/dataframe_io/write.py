@@ -54,11 +54,15 @@ def write_df_from_sqltable(
 
     # PRIMARY KEY CHECKS
     primary_keys: list[str] = [col.name for col in table.primary_key.columns]
+    if not all(k in df.columns for k in primary_keys):
+        raise ValueError(
+            f"At least one primary key is missing from the columns.\n{primary_keys=}\n{df.columns=}"
+        )
     if len(primary_keys) == 0:
         raise ValueError("Must provide a primary key:\n", table)
 
     any_pk_rows_duplicated: bool = df.select(
-        pl.any_horizontal(pl.col(["name", "age"]).is_duplicated().any())
+        pl.any_horizontal(pl.col(primary_keys).is_duplicated().any())
     ).item()
     if any_pk_rows_duplicated:
         raise ValueError(f"df must be unique on {primary_keys=}")
