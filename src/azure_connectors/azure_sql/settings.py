@@ -2,7 +2,8 @@ from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings
 
 from azure_connectors.config import EnvPrefix, get_settings_config
-from azure_connectors.validation import AzureSqlDatabaseName, AzureSqlServerDomainName
+from azure_connectors.validation import (AzureSqlDatabaseName,
+                                         AzureSqlServerDomainName)
 
 from .constants import AZURE_SQL_DEFAULT_DRIVER
 

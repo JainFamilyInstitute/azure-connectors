@@ -5,11 +5,8 @@ from azure.storage.blob import ContainerClient as AzContainerClient
 from azure_connectors.client_factory import ClientFactory
 from azure_connectors.config import CredentialScope
 
-from .settings import (
-    BlobClientSettings,
-    BlobServiceClientSettings,
-    ContainerClientSettings,
-)
+from .settings import (BlobClientSettings, BlobServiceClientSettings,
+                       ContainerClientSettings)
 
 BlobServiceClient = ClientFactory(
     AzBlobServiceClient,

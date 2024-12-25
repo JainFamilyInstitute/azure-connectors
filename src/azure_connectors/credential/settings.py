@@ -1,7 +1,8 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
-from azure_connectors.config import CredentialScope, EnvPrefix, get_settings_config
+from azure_connectors.config import (CredentialScope, EnvPrefix,
+                                     get_settings_config)
 
 from .enums import CredentialSource
 
