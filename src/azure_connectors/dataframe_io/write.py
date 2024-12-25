@@ -17,7 +17,8 @@ def write_df(
     if_table_exists: Literal["append", "replace", "fail"],
 ) -> None:
     sql_info = AzureSqlConnection.from_env()
-    engine: sqlalchemy.Engine = sql_info.engine
+    # engine: sqlalchemy.Engine = sql_info.default_engine
+    engine: sqlalchemy.Engine = sql_info.fast_engine
 
     if isinstance(df, pl.LazyFrame):
         df = df.collect()
@@ -54,7 +55,8 @@ def write_df_from_sqltable(
     ```
     """
     sql_info = AzureSqlConnection.from_env()
-    engine: sqlalchemy.Engine = sql_info.engine
+    # engine: sqlalchemy.Engine = sql_info.default_engine
+    engine: sqlalchemy.Engine = sql_info.fast_engine
 
     if isinstance(df, pl.LazyFrame):
         df = df.collect()
@@ -138,3 +140,20 @@ def write_df_from_sqltable(
             raise ValueError(
                 f"{insertion_method=} not in ['pl_to_sql_via_pandas', 'pl_to_sql_row_by_row']"
             )
+
+
+if __name__ == "__main__":
+    df = pl.DataFrame({"a": range(10_000)})
+    metadata = sqlalchemy.MetaData()
+    table = sqlalchemy.Table(
+        "write_df_from_sqltable_test",
+        metadata,
+        sqlalchemy.Column("a", sqlalchemy.Integer, nullable=False, primary_key=True),
+    )
+    write_df_from_sqltable(
+        df,
+        if_table_exists="replace",
+        table=table,
+        chunk_size=10_000,
+        insertion_method="pl_to_sql_row_by_row",
+    )

@@ -15,7 +15,7 @@ def read_df(
     execute_options: dict[str, Any] | None = None,
 ) -> pl.DataFrame:
     sql_info = AzureSqlConnection.from_env()
-    engine: sqlalchemy.Engine = sql_info.engine
+    engine: sqlalchemy.Engine = sql_info.default_engine
 
     return pl.read_database(
         query=query,

@@ -23,7 +23,7 @@ def test_sql_connection_authentication(monkeypatch):
 
         # Attempt to create a SQLAlchemy engine and connect to the database
         logger.info("Creating SQLAlchemy engine")
-        engine = sql_info.engine
+        engine = sql_info.default_engine
         logger.info("Connecting to the database")
         with engine.connect() as connection:
             logger.info("Executing test query")
@@ -37,7 +37,9 @@ def test_sql_connection_authentication(monkeypatch):
         logger.info("Test query executed successfully")
 
     except (ValueError, OperationalError) as e:
-        logger.error(f"Test failed with error: {e}. Please ensure you have a valid .env file or environment variables.")
+        logger.error(
+            f"Test failed with error: {e}. Please ensure you have a valid .env file or environment variables."
+        )
         pytest.fail(f"Test failed with error: {e}")
 
 

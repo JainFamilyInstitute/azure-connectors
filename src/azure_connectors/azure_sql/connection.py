@@ -40,7 +40,7 @@ class AzureSqlConnection:
         return cls(settings=settings, credential=credential)
 
     @cached_property
-    def engine(self) -> sqlalchemy.engine.base.Engine:
+    def default_engine(self) -> sqlalchemy.engine.base.Engine:
         """
         Get the SQLAlchemy engine for the Azure SQL connection, using self._connect as connection function.
 
@@ -48,6 +48,22 @@ class AzureSqlConnection:
             sqlalchemy.engine.base.Engine: The SQLAlchemy engine.
         """
         engine = sqlalchemy.create_engine(SQLALCHEMY_PREFIX, creator=self._connect)
+        return engine
+
+    @cached_property
+    def fast_engine(self) -> sqlalchemy.engine.base.Engine:
+        """
+        Get the SQLAlchemy engine for the Azure SQL connection, using self._connect as connection function.
+        NOTE: This engine has `fast_executemany := True`.
+
+        Returns:
+            sqlalchemy.engine.base.Engine: The SQLAlchemy engine.
+        """
+        engine = sqlalchemy.create_engine(
+            SQLALCHEMY_PREFIX,
+            creator=self._connect,
+            fast_executemany=True,
+        )
         return engine
 
     def _connect(self) -> pyodbc.Connection:
