@@ -4,9 +4,11 @@ import polars as pl
 import sqlalchemy
 
 from azure_connectors import AzureSqlConnection
+from azure_connectors.dataframe_io.utils import get_user_confirmation
 
 from . import dataframe_io_config
 from .insertion_methods import pl_to_sql_row_by_row, pl_to_sql_via_pandas
+from .read import get_table_len
 
 
 def write_df(
@@ -30,7 +32,7 @@ def write_df(
 
 def write_df_from_sqltable(
     df: pl.DataFrame | pl.LazyFrame,
-    if_table_exists: Literal["append", "replace", "fail"],
+    if_table_exists: Literal["append", "replace", "fail", "resume"],
     table: sqlalchemy.Table,
     chunk_size: int = dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
     insertion_method: Literal[
@@ -87,11 +89,21 @@ def write_df_from_sqltable(
             pass
         case "replace":
             if table_exists:
-                print("Dropping table")
+                # print("Dropping table")
+                get_user_confirmation(
+                    f"This operation will overwrite the existing `{table.name}` table."
+                )
                 table.drop(engine, checkfirst=True)
             pass
         case "append":
             pass
+        case "resume":
+            if table_exists:
+                current_table_len: int = get_table_len(table.name)
+                df = df.slice(offset=current_table_len)
+                get_user_confirmation(
+                    f"Resuming upload of `{table.name}` from row {current_table_len:_}. {df.shape[0]} rows remaining, or {df.shape[0]//chunk_size:_} chunks of size {chunk_size:_}."
+                )
         case _:
             raise ValueError('if_table_exists not in ["append", "replace", "fail"].')
 
@@ -100,13 +112,18 @@ def write_df_from_sqltable(
         print("Creating table")
         table.create(engine, checkfirst=True)
 
+    # cast `resume`
+    if_table_exists_no_resume: Literal["append", "replace", "fail"] = (
+        "append" if if_table_exists == "resume" else if_table_exists
+    )
+
     # insert data
     match insertion_method:
         case "pl_to_sql_via_pandas":
             pl_to_sql_via_pandas(
                 df,
                 table_name=table.name,
-                if_table_exists=if_table_exists,
+                if_table_exists=if_table_exists_no_resume,
                 engine=engine,
                 chunk_size=chunk_size,
             )

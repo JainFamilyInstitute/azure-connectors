@@ -27,3 +27,21 @@ def read_df(
         infer_schema_length=infer_schema_length,
         execute_options=execute_options,
     )
+
+
+def get_table_len(table_name: str) -> int:
+    """
+    Raises:
+        sqlalchemy.exc.ProgrammingError: If table does not exist.
+    """
+    query = f"""--sql
+    SELECT COUNT(*) AS TableLength FROM {table_name};
+    """
+    response: pl.DataFrame = read_df(query)
+    return response.item()
+
+
+if __name__ == "__main__":
+    x = get_table_len("votes_raw__dec_26_tablemeta")
+    print(x)
+    print(type(x))
