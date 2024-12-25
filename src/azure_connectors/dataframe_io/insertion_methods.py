@@ -54,6 +54,7 @@ def pl_to_sql_row_by_row(
         ):
             try:
                 conn.execute(insert_statement, chunk.rows(named=True))
+                conn.commit()
             except Exception as e:
                 print(
                     f"`pl_to_sql_row_by_row` failed while executing {insert_statement} on chunk #{i}.\n{chunk=}"
