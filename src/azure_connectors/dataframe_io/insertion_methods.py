@@ -4,7 +4,7 @@ import polars as pl
 import sqlalchemy
 
 
-def pl_to_sql(
+def pl_to_sql_via_pandas(
     df: pl.DataFrame,
     table_name: str,
     if_table_exists: Literal["append", "replace", "fail"],
@@ -26,3 +26,21 @@ def pl_to_sql(
             if_exists=if_table_exists,
             method="multi",
         )
+
+
+def pl_to_sql_row_by_row(
+    df: pl.DataFrame,
+    table: sqlalchemy.Table,
+    engine: sqlalchemy.Engine,
+    upload_chunk_size: int = 100,
+) -> None:
+    insert_statement = sqlalchemy.insert(table)
+    with engine.begin() as conn:
+        for i, chunk in enumerate(df.iter_slices(upload_chunk_size)):
+            try:
+                conn.execute(insert_statement, chunk.rows(named=True))
+            except Exception as e:
+                print(
+                    f"`pl_to_sql_row_by_row` failed while executing {insert_statement} on chunk #{i}.\n{chunk=}"
+                )
+                raise e

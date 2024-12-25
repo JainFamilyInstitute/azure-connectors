@@ -5,7 +5,7 @@ import sqlalchemy
 
 from azure_connectors import AzureSqlConnection
 
-from .utils import pl_to_sql
+from .insertion_methods import pl_to_sql_row_by_row, pl_to_sql_via_pandas
 
 
 def write_df(
@@ -19,7 +19,7 @@ def write_df(
     if isinstance(df, pl.LazyFrame):
         df = df.collect()
 
-    pl_to_sql(
+    pl_to_sql_via_pandas(
         df,
         table_name=table_name,
         if_table_exists=if_table_exists,
@@ -31,6 +31,9 @@ def write_df_from_sqltable(
     df: pl.DataFrame | pl.LazyFrame,
     if_table_exists: Literal["append", "replace", "fail"],
     table: sqlalchemy.Table,
+    insertion_method: Literal[
+        "pl_to_sql_via_pandas", "pl_to_sql_row_by_row"
+    ] = "pl_to_sql_row_by_row",
 ) -> None:
     """
     `table` param example:
@@ -96,9 +99,21 @@ def write_df_from_sqltable(
         table.create(engine, checkfirst=True)
 
     # insert data
-    pl_to_sql(
-        df,
-        table_name=table.name,
-        if_table_exists=if_table_exists,
-        engine=engine,
-    )
+    match insertion_method:
+        case "pl_to_sql_via_pandas":
+            pl_to_sql_via_pandas(
+                df,
+                table_name=table.name,
+                if_table_exists=if_table_exists,
+                engine=engine,
+            )
+        case "pl_to_sql_row_by_row":
+            pl_to_sql_row_by_row(
+                df,
+                table=table,
+                engine=engine,
+            )
+        case _:
+            raise ValueError(
+                f"{insertion_method=} not in ['pl_to_sql_via_pandas', 'pl_to_sql_row_by_row']"
+            )
