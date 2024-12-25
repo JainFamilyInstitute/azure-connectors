@@ -12,7 +12,7 @@ def pl_to_sql_via_pandas(
     table_name: str,
     if_table_exists: Literal["append", "replace", "fail"],
     engine: sqlalchemy.Engine,
-    chunk_size: int = 100,
+    chunk_size: int = dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
 ) -> None:
     try:
         df.to_pandas(use_pyarrow_extension_array=True).to_sql(
@@ -21,7 +21,7 @@ def pl_to_sql_via_pandas(
             if_exists=if_table_exists,
             method="multi",
             index=False,
-            chunksize=dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
+            chunksize=chunk_size,
         )
     except Exception as e:
         print("Failed writing to df when using pyarrow to convert pl --> pd:", e)
@@ -31,7 +31,7 @@ def pl_to_sql_via_pandas(
             if_exists=if_table_exists,
             method="multi",
             index=False,
-            chunksize=dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
+            chunksize=chunk_size,
         )
 
 
@@ -39,13 +39,11 @@ def pl_to_sql_row_by_row(
     df: pl.DataFrame,
     table: sqlalchemy.Table,
     engine: sqlalchemy.Engine,
-    chunk_size: int = 100,
+    chunk_size: int = dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
 ) -> None:
     insert_statement = sqlalchemy.insert(table)
     with engine.begin() as conn:
-        for i, chunk in tqdm(
-            enumerate(df.iter_slices(dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE))
-        ):
+        for i, chunk in tqdm(enumerate(df.iter_slices(chunk_size))):
             try:
                 conn.execute(insert_statement, chunk.rows(named=True))
             except Exception as e:
