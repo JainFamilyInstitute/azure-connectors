@@ -4,6 +4,8 @@ import polars as pl
 import sqlalchemy
 from tqdm.auto import tqdm
 
+from azure_connectors.dataframe_io.utils import find_n_chunks
+
 from . import dataframe_io_config
 
 
@@ -42,7 +44,9 @@ def pl_to_sql_row_by_row(
     chunk_size: int = dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
 ) -> None:
     insert_statement = sqlalchemy.insert(table)
-    total_chunks = (df.shape[0] // chunk_size) + 1
+
+    total_chunks: int = find_n_chunks(df, chunk_size=chunk_size)
+
     with engine.connect() as conn:
         for i, chunk in tqdm(
             enumerate(df.iter_slices(chunk_size)),
