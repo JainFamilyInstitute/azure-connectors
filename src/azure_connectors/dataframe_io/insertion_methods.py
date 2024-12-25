@@ -42,8 +42,12 @@ def pl_to_sql_row_by_row(
     chunk_size: int = dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
 ) -> None:
     insert_statement = sqlalchemy.insert(table)
+    total_chunks = (df.shape[0] // chunk_size) + 1
     with engine.begin() as conn:
-        for i, chunk in tqdm(enumerate(df.iter_slices(chunk_size))):
+        for i, chunk in tqdm(
+            enumerate(df.iter_slices(chunk_size)),
+            total=total_chunks,
+        ):
             try:
                 conn.execute(insert_statement, chunk.rows(named=True))
             except Exception as e:
