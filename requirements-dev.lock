@@ -228,6 +228,9 @@ stack-data==0.6.3
 tornado==6.4.2
     # via ipykernel
     # via jupyter-client
+tqdm==4.67.1
+    # via azure-connectors
+tqdm-stubs==0.2.1
 traitlets==5.14.3
     # via comm
     # via ipykernel
@@ -235,6 +238,9 @@ traitlets==5.14.3
     # via jupyter-client
     # via jupyter-core
     # via matplotlib-inline
+types-requests==2.32.0.20241016
+    # via types-tqdm
+types-tqdm==4.67.0.20241221
 typing-extensions==4.12.2
     # via azure-core
     # via azure-data-tables
@@ -250,6 +256,7 @@ tzdata==2024.2
     # via pandas
 urllib3==2.2.2
     # via requests
+    # via types-requests
 virtualenv==20.26.3
     # via pre-commit
 wcwidth==0.2.13

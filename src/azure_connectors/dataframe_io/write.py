@@ -5,6 +5,7 @@ import sqlalchemy
 
 from azure_connectors import AzureSqlConnection
 
+from . import dataframe_io_config
 from .insertion_methods import pl_to_sql_row_by_row, pl_to_sql_via_pandas
 
 
@@ -31,6 +32,7 @@ def write_df_from_sqltable(
     df: pl.DataFrame | pl.LazyFrame,
     if_table_exists: Literal["append", "replace", "fail"],
     table: sqlalchemy.Table,
+    chunk_size: int = dataframe_io_config.DEFAULT_WRITE_CHUNKSIZE,
     insertion_method: Literal[
         "pl_to_sql_via_pandas", "pl_to_sql_row_by_row"
     ] = "pl_to_sql_row_by_row",
@@ -106,12 +108,14 @@ def write_df_from_sqltable(
                 table_name=table.name,
                 if_table_exists=if_table_exists,
                 engine=engine,
+                chunk_size=chunk_size,
             )
         case "pl_to_sql_row_by_row":
             pl_to_sql_row_by_row(
                 df,
                 table=table,
                 engine=engine,
+                chunk_size=chunk_size,
             )
         case _:
             raise ValueError(

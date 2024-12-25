@@ -114,6 +114,8 @@ six==1.16.0
     # via python-dateutil
 sqlalchemy==2.0.31
     # via azure-connectors
+tqdm==4.67.1
+    # via azure-connectors
 typing-extensions==4.12.2
     # via azure-core
     # via azure-data-tables
