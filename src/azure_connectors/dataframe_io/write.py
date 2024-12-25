@@ -17,8 +17,7 @@ def write_df(
     if_table_exists: Literal["append", "replace", "fail"],
 ) -> None:
     sql_info = AzureSqlConnection.from_env()
-    # engine: sqlalchemy.Engine = sql_info.default_engine
-    engine: sqlalchemy.Engine = sql_info.fast_engine
+    engine: sqlalchemy.Engine = sql_info.engine
 
     if isinstance(df, pl.LazyFrame):
         df = df.collect()
@@ -55,8 +54,7 @@ def write_df_from_sqltable(
     ```
     """
     sql_info = AzureSqlConnection.from_env()
-    # engine: sqlalchemy.Engine = sql_info.default_engine
-    engine: sqlalchemy.Engine = sql_info.fast_engine
+    engine: sqlalchemy.Engine = sql_info.engine
 
     if isinstance(df, pl.LazyFrame):
         df = df.collect()

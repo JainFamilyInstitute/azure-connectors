@@ -23,7 +23,7 @@ def test_sql_connection_authentication(monkeypatch):
 
         # Attempt to create a SQLAlchemy engine and connect to the database
         logger.info("Creating SQLAlchemy engine")
-        engine = sql_info.default_engine
+        engine = sql_info.engine
         logger.info("Connecting to the database")
         with engine.connect() as connection:
             logger.info("Executing test query")

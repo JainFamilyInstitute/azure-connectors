@@ -24,6 +24,7 @@ class AzureSqlConnection:
 
     settings: AzureSqlSettings
     credential: AzureCredential
+    fast_executemany: bool = True
 
     CREDENTIAL_SCOPE: CredentialScope = CredentialScope.AZURE_SQL
 
@@ -40,21 +41,9 @@ class AzureSqlConnection:
         return cls(settings=settings, credential=credential)
 
     @cached_property
-    def default_engine(self) -> sqlalchemy.engine.base.Engine:
+    def engine(self) -> sqlalchemy.engine.base.Engine:
         """
         Get the SQLAlchemy engine for the Azure SQL connection, using self._connect as connection function.
-
-        Returns:
-            sqlalchemy.engine.base.Engine: The SQLAlchemy engine.
-        """
-        engine = sqlalchemy.create_engine(SQLALCHEMY_PREFIX, creator=self._connect)
-        return engine
-
-    @cached_property
-    def fast_engine(self) -> sqlalchemy.engine.base.Engine:
-        """
-        Get the SQLAlchemy engine for the Azure SQL connection, using self._connect as connection function.
-        NOTE: This engine has `fast_executemany := True`.
 
         Returns:
             sqlalchemy.engine.base.Engine: The SQLAlchemy engine.
@@ -62,8 +51,9 @@ class AzureSqlConnection:
         engine = sqlalchemy.create_engine(
             SQLALCHEMY_PREFIX,
             creator=self._connect,
-            fast_executemany=True,
+            fast_executemany=self.fast_executemany,
         )
+
         return engine
 
     def _connect(self) -> pyodbc.Connection:

@@ -15,7 +15,7 @@ def read_df(
     execute_options: dict[str, Any] | None = None,
 ) -> pl.DataFrame:
     sql_info = AzureSqlConnection.from_env()
-    engine: sqlalchemy.Engine = sql_info.default_engine
+    engine: sqlalchemy.Engine = sql_info.engine
 
     return pl.read_database(
         query=query,
@@ -42,6 +42,7 @@ def get_table_len(table_name: str) -> int:
 
 
 if __name__ == "__main__":
-    x = get_table_len("votes_raw__dec_26_tablemeta")
+
+    x = get_table_len("votes_raw__dec_25_tablemeta")
     print(x)
     print(type(x))
