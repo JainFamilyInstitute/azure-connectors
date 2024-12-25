@@ -102,7 +102,7 @@ def write_df_from_sqltable(
                 current_table_len: int = get_table_len(table.name)
                 df = df.slice(offset=current_table_len)
                 get_user_confirmation(
-                    f"Resuming upload of `{table.name}` from row {current_table_len:_}. {df.shape[0]} rows remaining, or {df.shape[0]//chunk_size:_} chunks of size {chunk_size:_}."
+                    f"Resuming upload of `{table.name}` from row {current_table_len:_}. {df.shape[0]:_} rows remaining, or {df.shape[0]//chunk_size:_} chunks of size {chunk_size:_}."
                 )
         case _:
             raise ValueError('if_table_exists not in ["append", "replace", "fail"].')
