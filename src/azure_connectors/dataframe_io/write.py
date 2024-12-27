@@ -72,7 +72,14 @@ def write_df_from_sqltable(
         pl.any_horizontal(pl.col(primary_keys).is_duplicated().any())
     ).item()
     if any_pk_rows_duplicated:
-        raise ValueError(f"df must be unique on {primary_keys=}")
+        offending_observations = df.filter(pl.col(primary_keys).is_duplicated()).sort(
+            primary_keys
+        )
+        raise ValueError(
+            f"df must be unique on {primary_keys=}.",
+            "The following observations have >1 unique value corresponding to the same unique primary_key (i.e., these are the observations causing this error):",
+            offending_observations,
+        )
     # / PRIMARY KEY CHECKS
 
     inspector = sqlalchemy.inspect(engine)
