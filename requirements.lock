@@ -7,7 +7,6 @@
 #   all-features: false
 #   with-sources: false
 #   generate-hashes: false
-#   universal: false
 
 -e file:.
 annotated-types==0.7.0
@@ -51,8 +50,6 @@ cryptography==42.0.8
     # via azure-storage-blob
     # via msal
     # via pyjwt
-greenlet==3.0.3
-    # via sqlalchemy
 idna==3.7
     # via requests
     # via yarl
@@ -73,12 +70,18 @@ msrest==0.7.1
     # via azure-mgmt-subscription
 multidict==6.0.5
     # via yarl
+numpy==2.2.1
+    # via pandas
 oauthlib==3.2.2
     # via requests-oauthlib
+pandas==2.2.3
+    # via azure-connectors
 polars==1.14.0
     # via azure-connectors
 portalocker==2.10.0
     # via msal-extensions
+pyarrow==18.1.0
+    # via azure-connectors
 pycparser==2.22
     # via cffi
 pydantic==2.8.2
@@ -92,8 +95,12 @@ pyjwt==2.8.0
     # via msal
 pyodbc==5.1.0
     # via azure-connectors
+python-dateutil==2.9.0.post0
+    # via pandas
 python-dotenv==1.0.1
     # via pydantic-settings
+pytz==2024.2
+    # via pandas
 requests==2.32.3
     # via azure-core
     # via msal
@@ -104,7 +111,10 @@ requests-oauthlib==2.0.0
 six==1.16.0
     # via azure-core
     # via isodate
+    # via python-dateutil
 sqlalchemy==2.0.31
+    # via azure-connectors
+tqdm==4.67.1
     # via azure-connectors
 typing-extensions==4.12.2
     # via azure-core
@@ -115,6 +125,8 @@ typing-extensions==4.12.2
     # via pydantic
     # via pydantic-core
     # via sqlalchemy
+tzdata==2024.2
+    # via pandas
 urllib3==2.2.2
     # via requests
 yarl==1.9.4

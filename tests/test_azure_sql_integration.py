@@ -37,7 +37,9 @@ def test_sql_connection_authentication(monkeypatch):
         logger.info("Test query executed successfully")
 
     except (ValueError, OperationalError) as e:
-        logger.error(f"Test failed with error: {e}. Please ensure you have a valid .env file or environment variables.")
+        logger.error(
+            f"Test failed with error: {e}. Please ensure you have a valid .env file or environment variables."
+        )
         pytest.fail(f"Test failed with error: {e}")
 
 

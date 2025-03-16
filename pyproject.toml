@@ -17,6 +17,9 @@ dependencies = [
     "azure-core>=1.30.2",
     "azure-storage-file-datalake>=12.16.0",
     "polars>=1.14.0",
+    "pandas>=2.2.3",
+    "pyarrow>=18.1.0",
+    "tqdm>=4.67.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
@@ -36,6 +39,9 @@ dev-dependencies = [
     "pytest-mock>=3.14.0",
     "coverage>=7.5.4",
     "sphinx-autodoc-typehints>=2.2.2",
+    "ipykernel>=6.29.5",
+    "tqdm-stubs>=0.2.1",
+    "types-tqdm>=4.67.0.20241221",
 ]
 
 [tool.hatch.metadata]

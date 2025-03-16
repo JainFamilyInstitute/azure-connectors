@@ -1,10 +1,7 @@
-from .azure_blob import BlobClient
-from .azure_blob import BlobServiceClient
-from .azure_blob import ContainerClient
-from .azure_sql import AzureSqlConnection
-from .azure_sql import SqlManagementClient
+from .azure_blob import BlobClient, BlobServiceClient, ContainerClient
+from .azure_sql import AzureSqlConnection, SqlManagementClient
 from .azure_tables import TableServiceClient
-from .dataframe_io import read_df, write_df
+from .dataframe_io import read_df, write_df, write_df_from_sqltable
 
 __all__ = [
     "BlobClient",
@@ -15,4 +12,5 @@ __all__ = [
     "TableServiceClient",
     "read_df",
     "write_df",
+    "write_df_from_sqltable",
 ]
