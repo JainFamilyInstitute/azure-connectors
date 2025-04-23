@@ -101,6 +101,7 @@ def write_df_from_sqltable(
                     f"This operation will overwrite the existing `{table.name}` table."
                 )
                 table.drop(engine, checkfirst=True)
+                table_exists = False
             pass
         case "append":
             pass
