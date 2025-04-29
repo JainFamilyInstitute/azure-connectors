@@ -15,7 +15,9 @@ def read_df(
     infer_schema_length: int | None = None,
     execute_options: dict[str, Any] | None = None,
 ) -> pl.DataFrame:
-    """Note: passing an `engine` will likely speed up execution time."""
+    """
+    Note: passing an `engine` will likely speed up execution time.
+    """
     if engine is None:
         sql_info = AzureSqlConnection.from_env()
         engine = sql_info.engine
